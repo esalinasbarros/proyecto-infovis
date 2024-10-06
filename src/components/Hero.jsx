@@ -1,6 +1,5 @@
 import React from 'react'
 import Lottie from 'lottie-react'
-import animationData from '../../public/assets/Animation - 1728162778608.json'
 
 function Hero() {
   return (
@@ -22,7 +21,7 @@ function Hero() {
           </div>
           <div className="md:w-1/2 flex justify-center">
             <Lottie 
-              animationData={animationData} 
+              animationData="../../public/assets/Animation - 1728162778608.json"
               className="w-64 h-64"
             />
           </div>

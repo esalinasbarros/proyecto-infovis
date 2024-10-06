@@ -1,6 +1,6 @@
 import React from 'react'
 import Lottie from 'lottie-react'
-import animationData from '../assets/Animation - 1728162778608.json'
+import animationData from '../../public/assets/Animation - 1728162778608.json'
 
 function Hero() {
   return (

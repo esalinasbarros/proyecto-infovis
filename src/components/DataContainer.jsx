@@ -12,6 +12,11 @@ function DataContainers() {
       <h1 className="text-4xl font-bold text-center mb-8 text-white">
         <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Gráficos</span> de Acciones de AAPL (Apple Inc.)
       </h1>
+      <div className='bg-white bg-opacity-10 rounded-lg p-4 ml-4 mr-4'>
+        <p className='text-white text-center'>
+          👀 Te recordamos que, <span className='font-bold'>si algunos gráficos tardan demasiado en cargar</span>, es probable que hayamos <span className='underline'>alcanzado la cuota diaria de nuestra API</span>.
+          </p>
+      </div>
       <div className="flex flex-wrap justify-center w-full">
         {/* First row */}
         <div className="flex w-full mb-4">

@@ -9,13 +9,12 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const AAPLHistoricalPricesChart = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [update, setUpdate] = useState(false); // Estado para controlar la actualización
 
     useEffect(() => {
-        // Función para verificar si los datos están almacenados localmente
         const checkLocalStorage = () => {
             const storedData = localStorage.getItem('AAPLStockData');
-            if (storedData) {
-                // Si los datos están en localStorage, los usamos directamente
+            if (storedData && !update) { // Solo usa localStorage si no se está forzando la actualización
                 const parsedData = JSON.parse(storedData);
                 setChartData(parsedData);
                 setLoading(false);
@@ -24,10 +23,13 @@ const AAPLHistoricalPricesChart = () => {
             return false;
         };
 
-        const fetchStockData = async () => {
+        const fetchStockData = async (forceUpdate = false) => {
             try {
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const formattedDate = oneYearAgo.toISOString().split('T')[0];
                 const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
+                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
                 );
                 const historicalData = response.data.historical;
                 const dates = historicalData.map((item) => item.date).reverse();
@@ -42,6 +44,7 @@ const AAPLHistoricalPricesChart = () => {
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
+                            pointRadius: 0,
                         },
                     ],
                 };
@@ -56,11 +59,31 @@ const AAPLHistoricalPricesChart = () => {
             }
         };
 
-        // Verifica si los datos ya están en localStorage antes de hacer la llamada
-        if (!checkLocalStorage()) {
-            fetchStockData();
+        if (!checkLocalStorage() || update) {
+            fetchStockData(update);
+            setUpdate(false); // Resetear el estado de actualización
         }
-    }, []);
+    }, [update]); // Dependencia en el estado de actualización
+
+    const options = {
+        scales: {
+            x: {
+                grid: {
+                    display: false, // Ocultar líneas de la cuadrícula en el eje x
+                },
+            },
+            y: {
+                grid: {
+                    display: false, // Ocultar líneas de la cuadrícula en el eje y
+                },
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
+                    },
+                },
+            },
+        },
+    };
 
     return (
         <div className="flex w-full justify-center">
@@ -68,19 +91,14 @@ const AAPLHistoricalPricesChart = () => {
                 {loading ? (
                     <p className="text-gray-300">Cargando gráfico...</p>
                 ) : (
-                    <div className="h-64 w-full">
-                        <Line
-                            data={chartData}
-                            options={{
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: { position: 'top' },
-                                },
-                            }}
-                        />
-                    </div>
+                    <Line data={chartData} options={options} />
                 )}
+                {/* <button
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                    onClick={() => setUpdate(true)} // Forzar la actualización
+                >
+                    Actualizar Datos
+                </button> */}
             </div>
         </div>
     );

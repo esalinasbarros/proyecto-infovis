@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 function Features() {
-  const [activeFeature, setActiveFeature] = useState(1);
-
   const features = [
     {
-      title: "Clear Insights",
-      description: "Transform raw data into actionable insights with our cutting-edge visualization tools.",
+      title: "Análisis Claros",
+      description: "Nuestras visualizaciones ofrecen una perspectiva clara y concisa de miles de datos financieros.",
       icon: (
         <svg className="w-8 h-8 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
@@ -15,8 +13,8 @@ function Features() {
       )
     },
     {
-      title: "Real-Time Updates",
-      description: "Stay ahead of the market with our real-time data processing and visualization.",
+      title: "Todo en Tiempo Real",
+      description: "Adelántate al mercado con nuestro procesamiento y visualización de datos en tiempo real.",
       icon: (
         <svg className="w-8 h-8 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
@@ -24,8 +22,8 @@ function Features() {
       )
     },
     {
-      title: "Customizable Views",
-      description: "Tailor your financial dashboard to your specific needs and preferences.",
+      title: "Vistas Personalizadas",
+      description: "Personaliza tu panel financiero según tus necesidades y preferencias específicas.",
       icon: (
         <svg className="w-8 h-8 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
@@ -39,11 +37,8 @@ function Features() {
       {features.map((feature, index) => (
         <div
           key={index}
-          className={`p-6 text-white rounded-lg shadow-lg transition-all duration-300 cursor-pointer
-            ${activeFeature === index 
-              ? "bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 transform scale-105" 
-              : "bg-white bg-opacity-5 transform scale-95"}`}
-          onClick={() => setActiveFeature(index)}
+          className={`p-6 text-white rounded-lg shadow-lg transition-all duration-500 cursor-pointer
+            bg-white bg-opacity-5 transform scale-95 hover:bg-gradient-to-br hover:from-emerald-500 hover:via-teal-600 hover:to-cyan-700 hover:scale-105`}
         >
           <div className="flex items-center mb-4 text-white">
             {feature.icon}
@@ -56,4 +51,4 @@ function Features() {
   )
 }
 
-export default Features
+export default Features;

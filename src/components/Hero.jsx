@@ -9,10 +9,10 @@ function Hero() {
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="md:w-1/2 text-center mb-8 md:mb-0">
             <h2 className="text-4xl font-extrabold mb-6 animate-fade-in-down">
-              Visualize Your <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Financial</span> Future
+              Visualiza las <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Finanzas</span> de tus Empresas Favoritas
             </h2>
             <p className="text-xl mb-8 animate-fade-in-up">
-              Our platform offers the most intuitive and comprehensive way to visualize complex financial information.
+              Nuestra plataforma ofrece la forma más intuitiva y completa de visualizar información financiera compleja.
             </p>
             <div className="flex justify-center">
               <button className="px-6 py-3 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white font-bold rounded-lg shadow-lg hover:opacity-90 transition-opacity duration-300">

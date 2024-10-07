@@ -17,12 +17,15 @@ const StockList = () => {
   return (
     <div className="w-full overflow-x-auto p-12">
       <h2 className="text-4xl font-bold text-center mb-4 text-white">
-        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Acciones</span> disponibles
+        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Acciones</span> Disponibles
       </h2>
       <div className="flex justify-center mt-12">
         <div className="flex flex-row gap-4">
           {popularStocks.map(stock => (
-            <div key={stock.symbol} className="w-40 h-24 flex flex-col justify-center items-center p-4 bg-white bg-opacity-10 rounded-lg shadow-md cursor-pointer hover:bg-gradient-to-br hover:from-emerald-500 hover:via-teal-600 hover:to-cyan-700 transition-colors duration-200">
+            <div
+              key={stock.symbol}
+              className="w-40 h-24 flex flex-col justify-center items-center p-4 bg-white bg-opacity-10 rounded-lg shadow-md cursor-pointer transition-colors duration-500 hover:bg-gradient-to-br hover:from-emerald-500 hover:via-teal-600 hover:to-cyan-700"
+            >
               <h3 className="font-bold text-lg text-center text-white">{stock.symbol}</h3>
               <p className="text-sm text-center text-white">{stock.name}</p>
             </div>

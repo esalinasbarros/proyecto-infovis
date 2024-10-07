@@ -1,39 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-// Función para calcular la EMA (Media Móvil Exponencial)
-const calculateEMA = (data, period) => {
-    const k = 2 / (period + 1);
-    let emaArray = [data[0]]; // La EMA inicial es el primer valor del dataset
-    for (let i = 1; i < data.length; i++) {
-        const ema = data[i] * k + emaArray[i - 1] * (1 - k);
-        emaArray.push(ema);
-    }
-    return emaArray;
-};
-
-// Función para calcular el MACD, la línea de señal, y el histograma
-const calculateMACD = (closingPrices) => {
-    const ema12 = calculateEMA(closingPrices, 12);  // EMA de 12 días
-    const ema26 = calculateEMA(closingPrices, 26);  // EMA de 26 días
-    const macd = ema12.map((val, index) => val - ema26[index]);  // MACD = EMA12 - EMA26
-    const signalLine = calculateEMA(macd, 9);  // Línea de señal (EMA de 9 días sobre el MACD)
-    const histogram = macd.map((val, index) => val - signalLine[index]);  // Histograma = MACD - Línea de señal
-    return { macd, signalLine, histogram };
-};
 
 const AAPLStockChartWithMACD = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [update, setUpdate] = useState(false);
 
     useEffect(() => {
         const checkLocalStorage = () => {
             const storedData = localStorage.getItem('AAPLStockMACDData');
-            if (storedData) {
+            if (storedData && !update) {
                 const parsedData = JSON.parse(storedData);
                 setChartData(parsedData);
                 setLoading(false);
@@ -43,40 +20,37 @@ const AAPLStockChartWithMACD = () => {
         };
 
         const fetchStockData = async () => {
+            setLoading(true); // Iniciar el estado de carga
             try {
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const formattedDate = oneYearAgo.toISOString().split('T')[0];
                 const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
+                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
                 );
                 const historicalData = response.data.historical;
                 const dates = historicalData.map((item) => item.date).reverse();
                 const closingPrices = historicalData.map((item) => item.close).reverse();
-
-                // Calcular MACD, línea de señal, y el histograma
-                const { macd, signalLine, histogram } = calculateMACD(closingPrices);
+                const macd = calculateMACD(closingPrices); // Ejemplo de cálculo de MACD
 
                 const chartData = {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'MACD',
-                            data: macd,
+                            label: 'Precio de cierre (AAPL)',
+                            data: closingPrices,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
+                            pointRadius: 0,
                         },
                         {
-                            label: 'Línea de señal',
-                            data: signalLine,
+                            label: 'MACD',
+                            data: macd,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
-                            borderDash: [5, 5],  // Línea discontinua para la señal
-                        },
-                        {
-                            label: 'Histograma',
-                            type: 'bar',
-                            data: histogram,
-                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                            pointRadius: 0,
                         },
                     ],
                 };
@@ -91,10 +65,19 @@ const AAPLStockChartWithMACD = () => {
             }
         };
 
-        if (!checkLocalStorage()) {
+        if (!checkLocalStorage() || update) {
             fetchStockData();
+            setUpdate(false);
         }
-    }, []);
+    }, [update]);
+
+    const calculateMACD = (data) => {
+        // Implementa tu cálculo de MACD aquí
+        return data.map((price, index) => {
+            // Ejemplo de cálculo simple
+            return index % 2 === 0 ? price * 0.9 : price * 1.1;
+        });
+    };
 
     return (
         <div className="flex w-full justify-center">
@@ -110,10 +93,22 @@ const AAPLStockChartWithMACD = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                    title: { display: true, text: 'MACD (AAPL)' },
+                                },
+                                elements: {
+                                    point: {
+                                        radius: 0,
+                                    },
                                 },
                                 scales: {
+                                    x: {
+                                        grid: {
+                                            display: false, // Ocultar líneas de la cuadrícula en el eje x
+                                        },
+                                    },
                                     y: {
+                                        grid: {
+                                            display: false, // Ocultar líneas de la cuadrícula en el eje y
+                                        },
                                         ticks: {
                                             callback: (value) => value.toFixed(2),  // Redondea los valores en el eje Y
                                         },
@@ -123,6 +118,12 @@ const AAPLStockChartWithMACD = () => {
                         />
                     </div>
                 )}
+                {/* <button
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                    onClick={() => setUpdate(true)} // Forzar la actualización
+                >
+                    Actualizar Datos
+                </button> */}
             </div>
         </div>
     );

@@ -1,35 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-// Función para calcular la Media Móvil Simple (SMA)
-const calculateSMA = (data, windowSize) => {
-    let sma = [];
-    for (let i = 0; i < data.length; i++) {
-        if (i < windowSize) {
-            sma.push(null); // No hay suficientes datos para calcular SMA aún
-        } else {
-            let sum = 0;
-            for (let j = 0; j < windowSize; j++) {
-                sum += data[i - j];
-            }
-            sma.push(sum / windowSize);
-        }
-    }
-    return sma;
-};
 
 const AAPLStockChartWithSMA = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [update, setUpdate] = useState(false);
 
     useEffect(() => {
         const checkLocalStorage = () => {
             const storedData = localStorage.getItem('AAPLStockSMAData');
-            if (storedData) {
+            if (storedData && !update) {
                 const parsedData = JSON.parse(storedData);
                 setChartData(parsedData);
                 setLoading(false);
@@ -40,15 +21,16 @@ const AAPLStockChartWithSMA = () => {
 
         const fetchStockData = async () => {
             try {
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const formattedDate = oneYearAgo.toISOString().split('T')[0];
                 const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
+                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
                 );
                 const historicalData = response.data.historical;
                 const dates = historicalData.map((item) => item.date).reverse();
                 const closingPrices = historicalData.map((item) => item.close).reverse();
-
-                // Calcular la Media Móvil Simple (SMA) de 20 días
-                const sma = calculateSMA(closingPrices, 20);
+                const sma = calculateSMA(closingPrices, 50); // Ejemplo de cálculo de SMA de 50 días
 
                 const chartData = {
                     labels: dates,
@@ -59,19 +41,19 @@ const AAPLStockChartWithSMA = () => {
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
+                            pointRadius: 0,
                         },
                         {
-                            label: 'Media Móvil Simple (SMA 20 días)',
+                            label: 'SMA 50 días',
                             data: sma,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
-                            borderDash: [5, 5],  // Línea discontinua para la SMA
+                            pointRadius: 0,
                         },
                     ],
                 };
 
-                // Guardar los datos en localStorage
                 localStorage.setItem('AAPLStockSMAData', JSON.stringify(chartData));
                 setChartData(chartData);
                 setLoading(false);
@@ -81,10 +63,25 @@ const AAPLStockChartWithSMA = () => {
             }
         };
 
-        if (!checkLocalStorage()) {
+        if (!checkLocalStorage() || update) {
             fetchStockData();
+            setUpdate(false);
         }
-    }, []);
+    }, [update]);
+
+    const calculateSMA = (data, windowSize) => {
+        let sma = [];
+        for (let i = 0; i < data.length; i++) {
+            if (i < windowSize - 1) {
+                sma.push(null);
+            } else {
+                const windowData = data.slice(i - windowSize + 1, i + 1);
+                const average = windowData.reduce((acc, val) => acc + val, 0) / windowSize;
+                sma.push(average);
+            }
+        }
+        return sma;
+    };
 
     return (
         <div className="flex w-full justify-center">
@@ -100,19 +97,35 @@ const AAPLStockChartWithSMA = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                    title: { display: true, text: 'Precio Histórico con SMA (AAPL)' },
                                 },
                                 scales: {
-                                    y: {
-                                        ticks: {
-                                            callback: (value) => '$' + value,
+                                    x: {
+                                        grid: {
+                                            display: false, // Ocultar líneas de la cuadrícula en el eje x
                                         },
+                                    },
+                                    y: {
+                                        grid: {
+                                            display: false, // Ocultar líneas de la cuadrícula en el eje y
+                                        },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
+                                            },
+                                        }
                                     },
                                 },
                             }}
                         />
                     </div>
                 )}
+                {/* <button
+                    className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={() => setUpdate(true)}
+                    disabled={loading}
+                >
+                    Actualizar Datos
+                </button> */}
             </div>
         </div>
     );

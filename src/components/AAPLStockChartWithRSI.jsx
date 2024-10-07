@@ -1,57 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-// Función para calcular el RSI
-const calculateRSI = (data, period = 14) => {
-    let gains = [];
-    let losses = [];
-
-    for (let i = 1; i < data.length; i++) {
-        const change = data[i] - data[i - 1];
-        if (change > 0) {
-            gains.push(change);
-            losses.push(0);
-        } else {
-            gains.push(0);
-            losses.push(Math.abs(change));
-        }
-    }
-
-    const averageGain = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-    const averageLoss = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-
-    let avgGain = averageGain(gains.slice(0, period));
-    let avgLoss = averageLoss(losses.slice(0, period));
-
-    let rsi = [];
-
-    for (let i = period; i < data.length; i++) {
-        if (i !== period) {
-            avgGain = (avgGain * (period - 1) + gains[i]) / period;
-            avgLoss = (avgLoss * (period - 1) + losses[i]) / period;
-        }
-
-        const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-        const rsiValue = 100 - 100 / (1 + rs);
-        rsi.push(rsiValue);
-    }
-
-    // Rellenar los primeros valores con 'null' para mantener la alineación con las fechas
-    return Array(period).fill(null).concat(rsi);
-};
 
 const AAPLStockChartWithRSI = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [update, setUpdate] = useState(false);
 
     useEffect(() => {
         const checkLocalStorage = () => {
             const storedData = localStorage.getItem('AAPLStockRSIData');
-            if (storedData) {
+            if (storedData && !update) {
                 const parsedData = JSON.parse(storedData);
                 setChartData(parsedData);
                 setLoading(false);
@@ -61,16 +20,18 @@ const AAPLStockChartWithRSI = () => {
         };
 
         const fetchStockData = async () => {
+            setLoading(true); // Iniciar el estado de carga
             try {
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const formattedDate = oneYearAgo.toISOString().split('T')[0];
                 const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
+                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
                 );
                 const historicalData = response.data.historical;
                 const dates = historicalData.map((item) => item.date).reverse();
                 const closingPrices = historicalData.map((item) => item.close).reverse();
-
-                // Calcular el RSI
-                const rsi = calculateRSI(closingPrices);
+                const rsi = calculateRSI(closingPrices, 14); // Ejemplo de cálculo de RSI de 14 días
 
                 const chartData = {
                     labels: dates,
@@ -81,14 +42,18 @@ const AAPLStockChartWithRSI = () => {
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
+                            pointRadius: 0,
+                            tension: 0.4,
                         },
                         {
-                            label: 'RSI (14 días)',
+                            label: 'RSI 14 días',
                             data: rsi,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
-                            borderDash: [5, 5], // Línea discontinua para el RSI
+                            pointRadius: 0,
+                            tension: 0.4,
+                            borderDash: undefined,
                         },
                     ],
                 };
@@ -96,17 +61,36 @@ const AAPLStockChartWithRSI = () => {
                 // Guardar los datos en localStorage
                 localStorage.setItem('AAPLStockRSIData', JSON.stringify(chartData));
                 setChartData(chartData);
-                setLoading(false);
+                setLoading(false); // Finalizar el estado de carga
             } catch (error) {
                 console.error('Error fetching stock data:', error);
-                setLoading(false);
+                setLoading(false); // Finalizar el estado de carga en caso de error
             }
         };
 
-        if (!checkLocalStorage()) {
+        if (!checkLocalStorage() || update) {
             fetchStockData();
+            setUpdate(false);
         }
-    }, []);
+    }, [update]);
+
+    const calculateRSI = (data, windowSize) => {
+        let rsi = [];
+        for (let i = 0; i < data.length; i++) {
+            if (i < windowSize) {
+                rsi.push(null);
+            } else {
+                const windowData = data.slice(i - windowSize, i);
+                const gains = windowData.filter((val, idx) => idx > 0 && val > windowData[idx - 1]).reduce((acc, val, idx) => acc + (val - windowData[idx - 1]), 0);
+                const losses = windowData.filter((val, idx) => idx > 0 && val < windowData[idx - 1]).reduce((acc, val, idx) => acc + (windowData[idx - 1] - val), 0);
+                const avgGain = gains / windowSize;
+                const avgLoss = losses / windowSize;
+                const rs = avgGain / avgLoss;
+                rsi.push(100 - (100 / (1 + rs)));
+            }
+        }
+        return rsi;
+    };
 
     return (
         <div className="flex w-full justify-center">
@@ -122,12 +106,24 @@ const AAPLStockChartWithRSI = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                    title: { display: true, text: 'RSI (14 días) y Precio Histórico (AAPL)' },
+                                },
+                                elements: {
+                                    point: {
+                                        radius: 0,
+                                    },
                                 },
                                 scales: {
+                                    x: {
+                                        grid: {
+                                            display: false,
+                                        },
+                                    },
                                     y: {
+                                        grid: {
+                                            display: false,
+                                        },
                                         ticks: {
-                                            callback: (value) => '$' + value,
+                                            callback: (value) => '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
                                         },
                                     },
                                 },
@@ -135,6 +131,13 @@ const AAPLStockChartWithRSI = () => {
                         />
                     </div>
                 )}
+                {/* <button
+                    className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={() => setUpdate(true)}
+                    disabled={loading}
+                >
+                    Actualizar Datos
+                </button> */}
             </div>
         </div>
     );

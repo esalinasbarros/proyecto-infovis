@@ -5,6 +5,7 @@ import AAPLStockChartWithSMA from './AAPLStockChartWithSMA'
 import AAPLStockChartWithRSI from './AAPLStockChartWithRSI'
 import AAPLStockChartWithMACD from './AAPLStockChartWithMACD'
 import StockPerformanceComparison from './StockPerformanceComparison'
+import BubbleChart from './AAPLBubbleChart'
 
 function DataContainers() {
   return (
@@ -67,8 +68,16 @@ function DataContainers() {
             </div>
           </div>
         </div>
+        <div className="flex w-full mb-4">
+          <div className="w-1/2 p-4">
+            <div className="bg-white bg-opacity-10 rounded-lg p-6">
+              <h2 className="text-xl font-bold text-white mb-2">Market Capitalization comparison</h2>
+              <BubbleChart />
+            </div>
+          </div>
+        </div>
         {/* Third row */}
-        <div className="flex w-full">
+        {/* <div className="flex w-full">
           <div className="w-1/2 p-4">
             <div className="bg-white bg-opacity-10 rounded-lg p-6">
               <h2 className="text-xl font-bold text-white mb-2">MACD (Moving Average Convergence Divergence)</h2>
@@ -90,7 +99,7 @@ function DataContainers() {
                 ayudando a los inversores a evaluar qué activos han sido más rentables o han tenido mejor desempeño en un marco temporal determinado.</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

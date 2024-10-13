@@ -1,83 +1,105 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+} from 'chart.js';
+import jsonData from '../data/AAPL.json';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement
+);
+
+const calculateEMA = (data, period) => {
+    const k = 2 / (period + 1);
+    let emaArray = [data[0]];
+    for (let i = 1; i < data.length; i++) {
+        const ema = data[i] * k + emaArray[i - 1] * (1 - k);
+        emaArray.push(ema);
+    }
+    return emaArray;
+};
+
+const calculateMACD = (closingPrices) => {
+    const ema12 = calculateEMA(closingPrices, 12);
+    const ema26 = calculateEMA(closingPrices, 26);
+    const macd = ema12.map((val, index) => val - ema26[index]);
+    const signalLine = calculateEMA(macd, 9);
+    const histogram = macd.map((val, index) => val - signalLine[index]);
+    return { macd, signalLine, histogram };
+};
 
 const AAPLStockChartWithMACD = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [update, setUpdate] = useState(false);
 
     useEffect(() => {
-        const checkLocalStorage = () => {
-            const storedData = localStorage.getItem('AAPLStockMACDData');
-            if (storedData && !update) {
-                const parsedData = JSON.parse(storedData);
-                setChartData(parsedData);
-                setLoading(false);
-                return true;
-            }
-            return false;
-        };
-
-        const fetchStockData = async () => {
-            setLoading(true); // Iniciar el estado de carga
+        const loadLocalData = () => {
             try {
-                const oneYearAgo = new Date();
-                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-                const formattedDate = oneYearAgo.toISOString().split('T')[0];
-                const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
-                );
-                const historicalData = response.data.historical;
-                const dates = historicalData.map((item) => item.date).reverse();
-                const closingPrices = historicalData.map((item) => item.close).reverse();
-                const macd = calculateMACD(closingPrices); // Ejemplo de cálculo de MACD
+                const historicalData = jsonData.historical;
+                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const dates = sortedData.map((item) => item.date);
+                const closingPrices = sortedData.map((item) => item.close);
+
+                const { macd, signalLine, histogram } = calculateMACD(closingPrices);
 
                 const chartData = {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Precio de cierre (AAPL)',
-                            data: closingPrices,
+                            label: 'MACD',
+                            data: macd,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0,
+                            pointRadius: 0, // Sin puntos
+                            tension: 0.2, // Línea suave
                         },
                         {
-                            label: 'MACD',
-                            data: macd,
+                            label: 'Línea de señal',
+                            data: signalLine,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0,
+                            borderDash: [5, 5],
+                            pointRadius: 0, // Sin puntos
+                            tension: 0.2, // Línea suave
+                        },
+                        {
+                            label: 'Histograma',
+                            type: 'bar',
+                            data: histogram,
+                            backgroundColor: histogram.map((val) =>
+                                val >= 0 ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)'
+                            ),
                         },
                     ],
                 };
 
-                // Guardar los datos en localStorage
-                localStorage.setItem('AAPLStockMACDData', JSON.stringify(chartData));
                 setChartData(chartData);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching stock data:', error);
+                console.error('Error al cargar los datos:', error);
                 setLoading(false);
             }
         };
 
-        if (!checkLocalStorage() || update) {
-            fetchStockData();
-            setUpdate(false);
-        }
-    }, [update]);
-
-    const calculateMACD = (data) => {
-        // Implementa tu cálculo de MACD aquí
-        return data.map((price, index) => {
-            // Ejemplo de cálculo simple
-            return index % 2 === 0 ? price * 0.9 : price * 1.1;
-        });
-    };
+        loadLocalData();
+    }, []);
 
     return (
         <div className="flex w-full justify-center">
@@ -85,7 +107,7 @@ const AAPLStockChartWithMACD = () => {
                 {loading ? (
                     <p className="text-gray-300">Cargando gráfico...</p>
                 ) : (
-                    <div className="h-64">
+                    <div className="h-96">
                         <Line
                             data={chartData}
                             options={{
@@ -93,24 +115,17 @@ const AAPLStockChartWithMACD = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                },
-                                elements: {
-                                    point: {
-                                        radius: 0,
-                                    },
+                                    title: { display: true, text: 'MACD (AAPL)' },
                                 },
                                 scales: {
-                                    x: {
-                                        grid: {
-                                            display: false, // Ocultar líneas de la cuadrícula en el eje x
+                                    y: {
+                                        ticks: {
+                                            callback: (value) => value.toFixed(2),
                                         },
                                     },
-                                    y: {
-                                        grid: {
-                                            display: false, // Ocultar líneas de la cuadrícula en el eje y
-                                        },
+                                    x: {
                                         ticks: {
-                                            callback: (value) => value.toFixed(2),  // Redondea los valores en el eje Y
+                                            maxTicksLimit: 10, // Limitar etiquetas
                                         },
                                     },
                                 },
@@ -118,12 +133,6 @@ const AAPLStockChartWithMACD = () => {
                         />
                     </div>
                 )}
-                {/* <button
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-                    onClick={() => setUpdate(true)} // Forzar la actualización
-                >
-                    Actualizar Datos
-                </button> */}
             </div>
         </div>
     );

@@ -14,7 +14,7 @@ function App() {
       <Hero />
       <div id="content">
         <Features />
-        <StockList />
+        {/*<StockList />*/}
         <DataContainers />
         <AboutUs />
       </div>

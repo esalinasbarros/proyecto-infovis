@@ -1,86 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { 
+    Chart as ChartJS, 
+    CategoryScale, 
+    LinearScale, 
+    PointElement, 
+    LineElement, 
+    Title, 
+    Tooltip, 
+    Legend 
+} from 'chart.js';
+import jsonData from '../data/AAPL.json';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+    CategoryScale, 
+    LinearScale, 
+    PointElement, 
+    LineElement, 
+    Title, 
+    Tooltip, 
+    Legend
+);
 
 const AAPLVolumeChart = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [update, setUpdate] = useState(false);
 
     useEffect(() => {
-        const checkLocalStorage = () => {
-            const storedData = localStorage.getItem('AAPLVolumeData');
-            if (storedData && !update) {
-                const parsedData = JSON.parse(storedData);
-                setChartData(parsedData);
-                setLoading(false);
-                return true;
-            }
-            return false;
-        };
-
-        const fetchVolumeData = async () => {
+        const loadLocalData = () => {
             try {
-                const oneYearAgo = new Date();
-                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-                const formattedDate = oneYearAgo.toISOString().split('T')[0];
-                const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
-                );
-                const historicalData = response.data.historical;
-                const dates = historicalData.map((item) => item.date).reverse();
-                const volumes = historicalData.map((item) => item.volume).reverse();
+                if (!jsonData.historical || jsonData.historical.length === 0) {
+                    throw new Error('Datos históricos vacíos o no disponibles');
+                }
+
+                const historicalData = jsonData.historical;
+                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const dates = sortedData.map((item) => item.date);
+                const volumes = sortedData.map((item) => item.volume);
 
                 const chartData = {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Volumen de Transacciones (USD)',
+                            label: 'Volumen de Transacciones (AAPL)',
                             data: volumes,
-                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            borderWidth: 2,
+                            fill: true, // Relleno bajo la línea
+                            pointRadius: 0, // Sin puntos en la línea
+                            tension: 0.3, // Suavizar la línea
                         },
                     ],
                 };
 
-                localStorage.setItem('AAPLVolumeData', JSON.stringify(chartData));
                 setChartData(chartData);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching volume data:', error);
+                console.error('Error al cargar los datos:', error);
                 setLoading(false);
             }
         };
 
-        if (!checkLocalStorage() || update) {
-            fetchVolumeData();
-            setUpdate(false);
-        }
-    }, [update]);
-
-    const options = {
-        scales: {
-            x: {
-                grid: {
-                    display: false, // Ocultar líneas de la cuadrícula en el eje x
-                },
-            },
-            y: {
-                grid: {
-                    display: false, // Ocultar líneas de la cuadrícula en el eje y
-                },
-                ticks: {
-                    callback: function(value) {
-                        return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
-                    },
-                },
-            },
-        },
-    };
+        loadLocalData();
+    }, []);
 
     return (
         <div className="flex w-full justify-center">
@@ -88,15 +71,37 @@ const AAPLVolumeChart = () => {
                 {loading ? (
                     <p className="text-gray-300">Cargando gráfico...</p>
                 ) : (
-                    <Bar data={chartData} options={options} />
+                    <div className="h-64">
+                        <Line
+                            data={chartData}
+                            options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { position: 'top' },
+                                    title: { 
+                                        display: true, 
+                                        text: 'Volumen de Transacciones (AAPL)' 
+                                    },
+                                },
+                                scales: {
+                                    y: {
+                                        ticks: {
+                                            beginAtZero: true,
+                                            callback: (value) => 
+                                                value.toLocaleString(), // Formato de miles
+                                        },
+                                    },
+                                    x: {
+                                        ticks: {
+                                            maxTicksLimit: 10, // Limitar etiquetas para mejor legibilidad
+                                        },
+                                    },
+                                },
+                            }}
+                        />
+                    </div>
                 )}
-                {/* <button
-                    className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => setUpdate(true)}
-                    disabled={loading}
-                >
-                    Actualizar Datos
-                </button> */}
             </div>
         </div>
     );

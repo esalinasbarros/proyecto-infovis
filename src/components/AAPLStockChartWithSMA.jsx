@@ -1,87 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import jsonData from '../data/AAPL.json';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+const calculateSMA = (data, windowSize) => {
+    let sma = [];
+    for (let i = 0; i < data.length; i++) {
+        if (i < windowSize) {
+            sma.push(null); // Llenar con valores nulos hasta alcanzar el periodo
+        } else {
+            let sum = 0;
+            for (let j = 0; j < windowSize; j++) {
+                sum += data[i - j];
+            }
+            sma.push(sum / windowSize);
+        }
+    }
+    return sma;
+};
 
 const AAPLStockChartWithSMA = () => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [update, setUpdate] = useState(false);
 
     useEffect(() => {
-        const checkLocalStorage = () => {
-            const storedData = localStorage.getItem('AAPLStockSMAData');
-            if (storedData && !update) {
-                const parsedData = JSON.parse(storedData);
-                setChartData(parsedData);
-                setLoading(false);
-                return true;
-            }
-            return false;
-        };
-
-        const fetchStockData = async () => {
+        const loadLocalData = () => {
             try {
-                const oneYearAgo = new Date();
-                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-                const formattedDate = oneYearAgo.toISOString().split('T')[0];
-                const response = await axios.get(
-                    `https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?from=${formattedDate}&apikey=WhbI5G7ZJNT9alrAnPc9GG78BUfkCdy2`
-                );
-                const historicalData = response.data.historical;
-                const dates = historicalData.map((item) => item.date).reverse();
-                const closingPrices = historicalData.map((item) => item.close).reverse();
-                const sma = calculateSMA(closingPrices, 50); // Ejemplo de cálculo de SMA de 50 días
+                const historicalData = jsonData.historical;
+                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const dates = sortedData.map((item) => item.date);
+                const closingPrices = sortedData.map((item) => item.close);
+
+                // Calcular la SMA de 20 días
+                const sma = calculateSMA(closingPrices, 20);
 
                 const chartData = {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Precio de cierre (AAPL)',
+                            label: 'Precio de Cierre (AAPL)',
                             data: closingPrices,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0,
+                            pointRadius: 0, // Sin puntos
+                            tension: 0.2, // Línea suave
                         },
                         {
-                            label: 'SMA 50 días',
+                            label: 'Media Móvil Simple (SMA 20 días)',
                             data: sma,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0,
+                            borderDash: [5, 5], // Línea discontinua
+                            pointRadius: 0, // Sin puntos
+                            tension: 0.2, // Línea suave
                         },
                     ],
                 };
 
-                localStorage.setItem('AAPLStockSMAData', JSON.stringify(chartData));
                 setChartData(chartData);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching stock data:', error);
+                console.error('Error al cargar los datos:', error);
                 setLoading(false);
             }
         };
 
-        if (!checkLocalStorage() || update) {
-            fetchStockData();
-            setUpdate(false);
-        }
-    }, [update]);
-
-    const calculateSMA = (data, windowSize) => {
-        let sma = [];
-        for (let i = 0; i < data.length; i++) {
-            if (i < windowSize - 1) {
-                sma.push(null);
-            } else {
-                const windowData = data.slice(i - windowSize + 1, i + 1);
-                const average = windowData.reduce((acc, val) => acc + val, 0) / windowSize;
-                sma.push(average);
-            }
-        }
-        return sma;
-    };
+        loadLocalData();
+    }, []);
 
     return (
         <div className="flex w-full justify-center">
@@ -97,35 +95,27 @@ const AAPLStockChartWithSMA = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
+                                    title: {
+                                        display: true,
+                                        text: 'Precio Histórico con SMA (AAPL)',
+                                    },
                                 },
                                 scales: {
-                                    x: {
-                                        grid: {
-                                            display: false, // Ocultar líneas de la cuadrícula en el eje x
+                                    y: {
+                                        ticks: {
+                                            callback: (value) => `$${value.toFixed(2)}`,
                                         },
                                     },
-                                    y: {
-                                        grid: {
-                                            display: false, // Ocultar líneas de la cuadrícula en el eje y
-                                        },
+                                    x: {
                                         ticks: {
-                                            callback: function(value) {
-                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
-                                            },
-                                        }
+                                            maxTicksLimit: 10, // Limitar etiquetas del eje X
+                                        },
                                     },
                                 },
                             }}
                         />
                     </div>
                 )}
-                {/* <button
-                    className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => setUpdate(true)}
-                    disabled={loading}
-                >
-                    Actualizar Datos
-                </button> */}
             </div>
         </div>
     );

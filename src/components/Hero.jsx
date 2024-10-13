@@ -22,7 +22,7 @@ function Hero() {
           </div>
           <div className="md:w-1/2 flex justify-center">
             <Lottie 
-              animationData={animationData} 
+              animationData={animationData}
               className="w-64 h-64"
             />
           </div>

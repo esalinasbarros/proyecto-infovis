@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { 
     Chart as ChartJS, 
     CategoryScale, 
     LinearScale, 
-    PointElement, 
-    LineElement, 
+    BarElement, 
     Title, 
     Tooltip, 
     Legend 
@@ -15,8 +14,7 @@ import jsonData from '../data/AAPL.json';
 ChartJS.register(
     CategoryScale, 
     LinearScale, 
-    PointElement, 
-    LineElement, 
+    BarElement, 
     Title, 
     Tooltip, 
     Legend
@@ -34,7 +32,10 @@ const AAPLVolumeChart = () => {
                 }
 
                 const historicalData = jsonData.historical;
-                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const filteredData = historicalData.filter(item => new Date(item.date) >= oneYearAgo);
+                const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
                 const dates = sortedData.map((item) => item.date);
                 const volumes = sortedData.map((item) => item.volume);
 
@@ -42,14 +43,11 @@ const AAPLVolumeChart = () => {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Volumen de Transacciones (AAPL)',
+                            label: 'Volumen de Transacciones (USD)',
                             data: volumes,
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                            borderWidth: 2,
-                            fill: true, // Relleno bajo la línea
-                            pointRadius: 0, // Sin puntos en la línea
-                            tension: 0.3, // Suavizar la línea
+                            backgroundColor: 'rgba(224, 96, 254, 0.8)',
+                            borderColor: 'rgba(224, 96, 254, 1)',
+                            borderWidth: 1,
                         },
                     ],
                 };
@@ -72,29 +70,32 @@ const AAPLVolumeChart = () => {
                     <p className="text-gray-300">Cargando gráfico...</p>
                 ) : (
                     <div className="h-64">
-                        <Line
+                        <Bar
                             data={chartData}
                             options={{
                                 responsive: true,
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                    title: { 
-                                        display: true, 
-                                        text: 'Volumen de Transacciones (AAPL)' 
-                                    },
+                                },
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
                                 },
                                 scales: {
-                                    y: {
-                                        ticks: {
-                                            beginAtZero: true,
-                                            callback: (value) => 
-                                                value.toLocaleString(), // Formato de miles
+                                    x:{
+                                        grid: {
+                                            display: false,
                                         },
                                     },
-                                    x: {
+                                    y: {
+                                        grid: {
+                                            display: false,
+                                        },
                                         ticks: {
-                                            maxTicksLimit: 10, // Limitar etiquetas para mejor legibilidad
+                                            callback: function(value) {
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                            },
                                         },
                                     },
                                 },

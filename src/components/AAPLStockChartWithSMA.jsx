@@ -38,7 +38,10 @@ const AAPLStockChartWithSMA = () => {
         const loadLocalData = () => {
             try {
                 const historicalData = jsonData.historical;
-                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const filteredData = historicalData.filter(item => new Date(item.date) >= oneYearAgo);
+                const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
                 const dates = sortedData.map((item) => item.date);
                 const closingPrices = sortedData.map((item) => item.close);
 
@@ -49,23 +52,22 @@ const AAPLStockChartWithSMA = () => {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Precio de Cierre (AAPL)',
+                            label: 'Precio de Cierre (USD)',
                             data: closingPrices,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0, // Sin puntos
-                            tension: 0.2, // Línea suave
+                            pointRadius: 0,
+                            tension: 0.2,
                         },
                         {
-                            label: 'Media Móvil Simple (SMA 20 días)',
+                            label: 'Media Móvil Simple (USD)',
                             data: sma,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
-                            borderDash: [5, 5], // Línea discontinua
-                            pointRadius: 0, // Sin puntos
-                            tension: 0.2, // Línea suave
+                            pointRadius: 0,
+                            tension: 0.2,
                         },
                     ],
                 };
@@ -95,20 +97,25 @@ const AAPLStockChartWithSMA = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                    title: {
-                                        display: true,
-                                        text: 'Precio Histórico con SMA (AAPL)',
-                                    },
+                                },
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
                                 },
                                 scales: {
-                                    y: {
-                                        ticks: {
-                                            callback: (value) => `$${value.toFixed(2)}`,
+                                    x:{
+                                        grid: {
+                                            display: false,
                                         },
                                     },
-                                    x: {
+                                    y: {
+                                        grid: {
+                                            display: false,
+                                        },
                                         ticks: {
-                                            maxTicksLimit: 10, // Limitar etiquetas del eje X
+                                            callback: function(value) {
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
+                                            },
                                         },
                                     },
                                 },

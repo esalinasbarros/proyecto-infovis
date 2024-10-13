@@ -47,15 +47,28 @@ const D3BubbleChart = () => {
     };
 
     const drawChart = (data) => {
-      const width = 800;
-      const height = 800;
+      const width = 780;
+      const height = 615;
 
       const sizeScale = d3
         .scaleSqrt()
         .domain([0, d3.max(data, (d) => d.marketCap)])
         .range([20, 100]);
 
-      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+      const colorScale = d3.scaleOrdinal()
+        .domain(stockSymbols)
+        .range([
+            '#FF6F61', // Darker Red
+            '#FF8C42', // Darker Orange
+            '#FFD700', // Darker Yellow
+            '#4CAF50', // Darker Green
+            '#2196F3', // Darker Blue
+            '#9C27B0', // Darker Purple
+            '#FF69B4', // Darker Pink
+            '#4682B4', // Darker Sky Blue
+            '#FF7F50'  // Darker Peach
+        ]);
+      
 
       d3.select(svgRef.current).selectAll('*').remove();
 
@@ -134,7 +147,7 @@ const D3BubbleChart = () => {
     fetchStockData();
   }, [apiKey]);
 
-  return <svg ref={svgRef}></svg>;
+  return <svg ref={svgRef} className="rounded-lg"></svg>;
 };
 
 export default D3BubbleChart;

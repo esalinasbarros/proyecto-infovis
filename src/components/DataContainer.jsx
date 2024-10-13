@@ -3,10 +3,10 @@ import AAPLHistoricalPricesChart from './AAPLHistoricalPricesChart'
 import AAPLVolumeChart from './AAPLVolumeChart'
 import AAPLStockChartWithSMA from './AAPLStockChartWithSMA'
 import AAPLStockChartWithRSI from './AAPLStockChartWithRSI'
-import AAPLStockChartWithMACD from './AAPLStockChartWithMACD'
-import StockPerformanceComparison from './StockPerformanceComparison'
+// import AAPLStockChartWithMACD from './AAPLStockChartWithMACD'
+// import StockPerformanceComparison from './StockPerformanceComparison'
 import AAPLProductVsStock from './AAPLProductVsStock';
-import BubbleChart from './AAPLBubbleChart'
+import AAPLBubbleChart from './AAPLBubbleChart'
 
 function DataContainers() {
   return (
@@ -69,15 +69,23 @@ function DataContainers() {
             </div>
           </div>
         </div>
+        {/* Third row */}
         <div className="flex w-full mb-4">
+        <div className="w-1/2 p-4">
+            <div className="bg-white bg-opacity-10 rounded-lg p-6">
+              <h2 className="text-xl font-bold text-white mb-2">Lanzamiento de Productos</h2>
+              <AAPLProductVsStock />
+              <h3 className="text-large font-semibold text-white mt-4 mb-2">¿Qué representa este gráfico?</h3>
+              <p className="text-gray-400 font-extralight text-justify">Este grafico muestra la fecha de los distintos tipos de productos Apple que han salido al mercado y el valor de la acción historica, buscando alguna relación entre estos dos.</p>
+            </div>
+          </div>
           <div className="w-1/2 p-4">
             <div className="bg-white bg-opacity-10 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-white mb-2">Market Capitalization comparison</h2>
-              <BubbleChart />
+              <h2 className="text-xl font-bold text-white mb-2">Comparación de Mercado</h2>
+              <AAPLBubbleChart />
             </div>
           </div>
         </div>
-        {/* Third row */}
         {/* <div className="flex w-full">
           <div className="w-1/2 p-4">
             <div className="bg-white bg-opacity-10 rounded-lg p-6">
@@ -102,18 +110,6 @@ function DataContainers() {
           </div>
         </div>
         {/* Fourth row */}
-        <div className="flex w-full">
-          <div className="w-1/2 p-4">
-            <div className="bg-white bg-opacity-10 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-white mb-2">Lanzamiento de procutos v/s Valor de la Acción</h2>
-              <AAPLProductVsStock />
-              <h3 className="text-large font-semibold text-white mt-4 mb-2">¿Qué representa este gráfico?</h3>
-              <p className="text-gray-400 font-extralight text-justify">Este grafico muestra la fecha de los distintos tipos de productos Apple que han salido al mercado y el valor de la acción historica, buscando alguna relación entre estos dos.</p>
-            </div>
-          </div>
-          <div className="w-1/2 p-4">
-          </div>
-        </div> */}
       </div>
     </div>
   )

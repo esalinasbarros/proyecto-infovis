@@ -22,7 +22,10 @@ const AAPLHistoricalPricesChart = () => {
         const loadChartData = () => {
             try {
                 const historicalData = jsonData.historical;
-                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const filteredData = historicalData.filter(item => new Date(item.date) >= oneYearAgo);
+                const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
                 const dates = sortedData.map((item) => item.date);
                 const closingPrices = sortedData.map((item) => item.close);
 
@@ -30,7 +33,7 @@ const AAPLHistoricalPricesChart = () => {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Precio de cierre (AAPL)',
+                            label: 'Precio de cierre (USD)',
                             data: closingPrices,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
@@ -66,6 +69,27 @@ const AAPLHistoricalPricesChart = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
+                                },
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                                scales: {
+                                    x:{
+                                        grid: {
+                                            display: false,
+                                        },
+                                    },
+                                    y: {
+                                        grid: {
+                                            display: false,
+                                        },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
+                                            },
+                                        },
+                                    },
                                 },
                             }}
                         />

@@ -33,19 +33,29 @@ const productColors = {
   Vision: 'rgba(201, 203, 207, 1)', // Gris
 };
 
+const getTextColor = (backgroundColor) => {
+  const color = backgroundColor.match(/\d+/g).map(Number);
+  const brightness = (color[0] * 299 + color[1] * 587 + color[2] * 114) / 1000;
+  return brightness > 125 ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)';
+};
+
 const productLaunches = [
-  { name: 'iPhone 11', date: '2019-09-20', type: 'iPhone' },
-  { name: 'MacBook Pro 16"', date: '2019-11-13', type: 'MacBook' },
-  { name: 'iPhone SE (2da generación)', date: '2020-04-24', type: 'iPhone' },
-  { name: 'Apple Watch Series 6', date: '2020-09-18', type: 'Watch' },
-  { name: 'AirPods Max', date: '2020-12-15', type: 'AirPods' },
-  { name: 'iPad Pro (M1)', date: '2021-05-21', type: 'iPad' },
-  { name: 'iPhone 13', date: '2021-09-24', type: 'iPhone' },
-  { name: 'MacBook Pro 14"', date: '2021-10-26', type: 'MacBook' },
-  { name: 'iPhone 14', date: '2022-09-16', type: 'iPhone' },
-  { name: 'Mac Mini (M2)', date: '2023-01-24', type: 'MacBook' },
-  { name: 'iPhone 15', date: '2023-09-22', type: 'iPhone' },
-  { name: 'Apple Vision Pro', date: '2024-06-28', type: 'Vision' },
+  // { name: 'iPhone 11', date: '2019-09-20', type: 'iPhone' },
+  // { name: 'MacBook Pro 16"', date: '2019-11-13', type: 'MacBook' },
+  // { name: 'iPhone SE (2da generación)', date: '2020-04-24', type: 'iPhone' },
+  // { name: 'Apple Watch Series 6', date: '2020-09-18', type: 'Watch' },
+  // { name: 'AirPods Max', date: '2020-12-15', type: 'AirPods' },
+  // { name: 'iPad Pro (M1)', date: '2021-05-21', type: 'iPad' },
+  // { name: 'iPhone 13', date: '2021-09-24', type: 'iPhone' },
+  // { name: 'MacBook Pro 14"', date: '2021-10-26', type: 'MacBook' },
+  // { name: 'iPhone 14', date: '2022-09-16', type: 'iPhone' },
+  // { name: 'Mac Mini (M2)', date: '2023-01-24', type: 'MacBook' },
+  // { name: 'Apple Vision Pro', date: '2023-06-05', type: 'Vision' },
+  // { name: 'iPhone 15', date: '2023-09-22', type: 'iPhone' },
+  { name: 'MacBook Pro (M3)', date: '2023-10-30', type: 'MacBook' },
+  { name: 'iPad Pro (M4)', date: '2024-05-07', type: 'iPad' },
+  { name: 'Apple Intelligence', date: '2024-06-10', type: 'iPhone' },
+  { name: 'iPhone 16', date: '2024-09-09', type: 'iPhone' },
 ];
 
 const AAPLProductVsStock = () => {
@@ -56,7 +66,10 @@ const AAPLProductVsStock = () => {
     const loadLocalData = () => {
       try {
         const historicalData = jsonData.historical;
-        const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const filteredData = historicalData.filter(item => new Date(item.date) >= oneYearAgo);
+        const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
         const dates = sortedData.map((item) => item.date);
         const closingPrices = sortedData.map((item) => item.close);
 
@@ -70,23 +83,32 @@ const AAPLProductVsStock = () => {
               borderColor: productColors[launch.type],
               borderWidth: 2,
               label: {
+                rotation: 90,
                 content: launch.name,
                 enabled: true,
-                position: 'top',
-                backgroundColor: productColors[launch.type],
+                display: true,
+                position: 'start',
+                xAdjust: 10,
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                color: '#fff',
+                font: {
+                  size: 10,
+                  weight: 'normal',
+                },
+                padding: 4,
               },
             };
           }
           return null;
-        }).filter((annotation) => annotation !== null);
+        }).filter((annotation) => annotation !== null);              
 
         const chartData = {
           labels: dates,
           datasets: [
             {
-              label: 'Valor acción vs Lanzamientos de Productos',
+              label: 'Precio de cierre (USD)',
               data: closingPrices,
-              borderColor: 'rgba(75, 192, 192, 1)',
+              borderColor: 'rgba(75, 192, 192, 0.3)',
               borderWidth: 2,
               fill: false,
               pointRadius: 0, 
@@ -103,9 +125,26 @@ const AAPLProductVsStock = () => {
             plugins: {
               annotation: {
                 annotations: annotations,
+                clip: false,
               },
               legend: { position: 'top' },
+            },            
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+              y: {
+                grid: {
+                  display: false,
+                },
+              },
             },
+            interaction: {
+              mode: 'index',
+              intersect: false,
+          },
           },
         });
         setLoading(false);

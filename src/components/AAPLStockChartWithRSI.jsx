@@ -57,7 +57,10 @@ const AAPLStockChartWithRSI = () => {
         const loadLocalData = () => {
             try {
                 const historicalData = jsonData.historical;
-                const sortedData = historicalData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                const filteredData = historicalData.filter(item => new Date(item.date) >= oneYearAgo);
+                const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
                 const dates = sortedData.map((item) => item.date);
                 const closingPrices = sortedData.map((item) => item.close);
 
@@ -67,24 +70,23 @@ const AAPLStockChartWithRSI = () => {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Precio de cierre (AAPL)',
+                            label: 'Precio de cierre (USD)',
                             data: closingPrices,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0, // Quitar los puntos
-                            tension: 0.2, // Suavizar la línea
+                            pointRadius: 0,
+                            tension: 0.2,
                             yAxisID: 'y1',
                         },
                         {
-                            label: 'RSI (14 días)',
+                            label: 'RSI',
                             data: rsi,
-                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderColor: 'rgba(255, 160, 47, 0.8)',
                             borderWidth: 2,
                             fill: false,
-                            borderDash: [5, 5], // Línea discontinua
-                            pointRadius: 0, // Quitar los puntos
-                            tension: 0.2, // Suavizar la línea
+                            pointRadius: 0,
+                            tension: 0.2,
                             yAxisID: 'y2',
                         },
                     ],
@@ -115,17 +117,28 @@ const AAPLStockChartWithRSI = () => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
-                                    title: { 
-                                        display: true, 
-                                        text: 'RSI (14 días) y Precio Histórico (AAPL)' 
-                                    },
+                                },
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
                                 },
                                 scales: {
+                                    x: {
+                                        grid: {
+                                            display: false,
+                                        },
+                                    },
                                     y1: {
                                         type: 'linear',
                                         position: 'left',
+                                        grid: {
+                                            display: false,
+                                        },
                                         ticks: {
-                                            callback: (value) => `$${value.toFixed(2)}`,
+                                            color: 'rgba(75, 192, 192, 1)',
+                                            callback: function(value) {
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                            },
                                         },
                                     },
                                     y2: {
@@ -133,13 +146,12 @@ const AAPLStockChartWithRSI = () => {
                                         position: 'right',
                                         min: 0,
                                         max: 100,
-                                        ticks: {
-                                            stepSize: 10,
-                                            callback: (value) => `${value}%`,
-                                        },
                                         grid: {
-                                            drawOnChartArea: false,
+                                            display: false,
                                         },
+                                        ticks: {
+                                            color: 'rgba(255, 160, 47, 0.8)',
+                                        }
                                     },
                                 },
                             }}

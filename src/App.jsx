@@ -12,7 +12,7 @@ function App() {
     <div className=''>
       <Header />
       <div id="content">
-        {/*<StockList />*/}
+        <StockList />
         <DataContainers />
       </div>
     </div>

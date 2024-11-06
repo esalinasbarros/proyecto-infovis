@@ -11,12 +11,9 @@ function App() {
   return (
     <div className=''>
       <Header />
-      <Hero />
       <div id="content">
-        <Features />
         {/*<StockList />*/}
         <DataContainers />
-        <AboutUs />
       </div>
     </div>
   )

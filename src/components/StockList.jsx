@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import axios from 'axios';
 
 const popularStocks = [
   { symbol: 'AAPL', name: 'Apple Inc.' },
@@ -13,9 +14,9 @@ const popularStocks = [
   { symbol: 'V', name: 'Visa Inc.' },
 ];
 
-const StockList = () => {
-  const [activeStock, setActiveStock] = useState(null);
+const apiKey = 'uDFT7igHou7SIY1ePwXjyXuHsELrLFc0';
 
+const StockList = ({ activeStock, setActiveStock }) => {
   const playClickSound = () => {
     const audio = new Audio('public/assets/click.ogg.mp3');
     audio.play();
@@ -24,6 +25,29 @@ const StockList = () => {
   const handleClick = (symbol) => {
     playClickSound();
     setActiveStock(symbol);
+  };
+
+  const updateStockData = async (symbol) => {
+    try {
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+      const formattedDate = oneYearAgo.toISOString().split('T')[0];
+
+      const response = await axios.get(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?from=${formattedDate}&apikey=${apiKey}`);
+      const stockData = response.data;
+
+      // Guardar los datos en un archivo JSON
+      const filePath = path.join(__dirname, '..', 'data', `${symbol}.json`);
+      const fileData = JSON.stringify(stockData, null, 2);
+
+      // Usar la API de File System para guardar el archivo (esto solo funcionará en un entorno Node.js)
+      fs.writeFileSync(filePath, fileData);
+
+      alert(`Stock data for ${symbol} updated successfully.`);
+    } catch (error) {
+      console.error(`Error updating stock data for ${symbol}:`, error);
+      alert(`Failed to update stock data for ${symbol}.`);
+    }
   };
 
   return (

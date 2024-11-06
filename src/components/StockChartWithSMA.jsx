@@ -1,61 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { 
-    Chart as ChartJS, 
-    CategoryScale, 
-    LinearScale, 
-    PointElement, 
-    LineElement, 
-    Title, 
-    Tooltip, 
-    Legend 
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
 } from 'chart.js';
-import jsonData from '../data/AAPL.json';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const calculateRSI = (data, period = 14) => {
-    let gains = [];
-    let losses = [];
-
-    for (let i = 1; i < data.length; i++) {
-        const change = data[i] - data[i - 1];
-        if (change > 0) {
-            gains.push(change);
-            losses.push(0);
+const calculateSMA = (data, windowSize) => {
+    let sma = [];
+    for (let i = 0; i < data.length; i++) {
+        if (i < windowSize) {
+            sma.push(null); // Llenar con valores nulos hasta alcanzar el periodo
         } else {
-            gains.push(0);
-            losses.push(Math.abs(change));
+            let sum = 0;
+            for (let j = 0; j < windowSize; j++) {
+                sum += data[i - j];
+            }
+            sma.push(sum / windowSize);
         }
     }
-
-    const averageGain = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-    const averageLoss = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
-
-    let avgGain = averageGain(gains.slice(0, period));
-    let avgLoss = averageLoss(losses.slice(0, period));
-
-    let rsi = [];
-
-    for (let i = period; i < data.length; i++) {
-        avgGain = (avgGain * (period - 1) + gains[i]) / period;
-        avgLoss = (avgLoss * (period - 1) + losses[i]) / period;
-
-        const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-        const rsiValue = 100 - 100 / (1 + rs);
-        rsi.push(rsiValue);
-    }
-
-    return Array(period).fill(null).concat(rsi);
+    return sma;
 };
 
-const AAPLStockChartWithRSI = () => {
+const StockChartWithSMA = ({ activeStock }) => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadLocalData = () => {
+        const loadLocalData = async () => {
             try {
+                let jsonData;
+                switch (activeStock) {
+                    case 'AAPL':
+                        jsonData = await import('../data/AAPL.json');
+                        break;
+                    case 'MSFT':
+                        jsonData = await import('../data/MSFT.json');
+                        break;
+                    case 'GOOGL':
+                        jsonData = await import('../data/GOOGL.json');
+                        break;
+                    case 'AMZN':
+                        jsonData = await import('../data/AMZN.json');
+                        break;
+                    case 'NVDA':
+                        jsonData = await import('../data/NVDA.json');
+                        break;
+                    case 'TSLA':
+                        jsonData = await import('../data/TSLA.json');
+                        break;
+                    case 'META':
+                        jsonData = await import('../data/META.json');
+                        break;
+                    case 'BRK.B':
+                        jsonData = await import('../data/BRKB.json');
+                        break;
+                    case 'JPM':
+                        jsonData = await import('../data/JPM.json');
+                        break;
+                    case 'V':
+                        jsonData = await import('../data/V.json');
+                        break;
+                    default:
+                        jsonData = await import('../data/AAPL.json');
+                }
+
                 const historicalData = jsonData.historical;
                 const oneYearAgo = new Date();
                 oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -64,30 +80,29 @@ const AAPLStockChartWithRSI = () => {
                 const dates = sortedData.map((item) => item.date);
                 const closingPrices = sortedData.map((item) => item.close);
 
-                const rsi = calculateRSI(closingPrices);
+                // Calcular la SMA de 20 días
+                const sma = calculateSMA(closingPrices, 20);
 
                 const chartData = {
                     labels: dates,
                     datasets: [
                         {
-                            label: 'Precio de cierre (USD)',
+                            label: 'Precio de Cierre (USD)',
                             data: closingPrices,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
                             pointRadius: 0,
                             tension: 0.2,
-                            yAxisID: 'y1',
                         },
                         {
-                            label: 'RSI',
-                            data: rsi,
-                            borderColor: 'rgba(255, 160, 47, 0.8)',
+                            label: 'Media Móvil Simple (USD)',
+                            data: sma,
+                            borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
                             fill: false,
                             pointRadius: 0,
                             tension: 0.2,
-                            yAxisID: 'y2',
                         },
                     ],
                 };
@@ -100,8 +115,8 @@ const AAPLStockChartWithRSI = () => {
             }
         };
 
-        loadLocalData(); 
-    }, []);
+        loadLocalData();
+    }, [activeStock]);
 
     return (
         <div className="flex w-full justify-center">
@@ -123,35 +138,20 @@ const AAPLStockChartWithRSI = () => {
                                     intersect: false,
                                 },
                                 scales: {
-                                    x: {
+                                    x:{
                                         grid: {
                                             display: false,
                                         },
                                     },
-                                    y1: {
-                                        type: 'linear',
-                                        position: 'left',
+                                    y: {
                                         grid: {
                                             display: false,
                                         },
                                         ticks: {
-                                            color: 'rgba(75, 192, 192, 1)',
                                             callback: function(value) {
-                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
                                             },
                                         },
-                                    },
-                                    y2: {
-                                        type: 'linear',
-                                        position: 'right',
-                                        min: 0,
-                                        max: 100,
-                                        grid: {
-                                            display: false,
-                                        },
-                                        ticks: {
-                                            color: 'rgba(255, 160, 47, 0.8)',
-                                        }
                                     },
                                 },
                             }}
@@ -163,4 +163,4 @@ const AAPLStockChartWithRSI = () => {
     );
 };
 
-export default AAPLStockChartWithRSI;
+export default StockChartWithSMA;

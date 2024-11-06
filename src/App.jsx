@@ -1,19 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import Header from './components/Header'
-import Hero from './components/Hero'
-import Features from './components/Features'
-import AboutUs from './components/AboutUs'
 import StockList from './components/StockList'
 import DataContainers from './components/DataContainer'
 
 function App() {
+  const [activeStock, setActiveStock] = useState('AAPL');
+
   return (
     <div className=''>
       <Header />
       <div id="content">
-        <StockList />
-        <DataContainers />
+        <StockList activeStock={activeStock} setActiveStock={setActiveStock}/>
+        <DataContainers activeStock={activeStock}/>
       </div>
     </div>
   )

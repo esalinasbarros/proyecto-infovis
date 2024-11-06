@@ -26,36 +26,23 @@ ChartJS.register(
 
 const productColors = {
   iPhone: 'rgba(255, 99, 132, 1)', // Rojo
-  MacBook: 'rgba(54, 162, 235, 1)', // Azul
+  Mac: 'rgba(54, 162, 235, 1)', // Azul
   Watch: 'rgba(75, 192, 192, 1)', // Verde
   AirPods: 'rgba(255, 206, 86, 1)', // Amarillo
   iPad: 'rgba(153, 102, 255, 1)', // Morado
   Vision: 'rgba(201, 203, 207, 1)', // Gris
 };
 
-const getTextColor = (backgroundColor) => {
-  const color = backgroundColor.match(/\d+/g).map(Number);
-  const brightness = (color[0] * 299 + color[1] * 587 + color[2] * 114) / 1000;
-  return brightness > 125 ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)';
-};
-
 const productLaunches = [
-  // { name: 'iPhone 11', date: '2019-09-20', type: 'iPhone' },
-  // { name: 'MacBook Pro 16"', date: '2019-11-13', type: 'MacBook' },
-  // { name: 'iPhone SE (2da generación)', date: '2020-04-24', type: 'iPhone' },
-  // { name: 'Apple Watch Series 6', date: '2020-09-18', type: 'Watch' },
-  // { name: 'AirPods Max', date: '2020-12-15', type: 'AirPods' },
-  // { name: 'iPad Pro (M1)', date: '2021-05-21', type: 'iPad' },
-  // { name: 'iPhone 13', date: '2021-09-24', type: 'iPhone' },
-  // { name: 'MacBook Pro 14"', date: '2021-10-26', type: 'MacBook' },
-  // { name: 'iPhone 14', date: '2022-09-16', type: 'iPhone' },
-  // { name: 'Mac Mini (M2)', date: '2023-01-24', type: 'MacBook' },
-  // { name: 'Apple Vision Pro', date: '2023-06-05', type: 'Vision' },
-  // { name: 'iPhone 15', date: '2023-09-22', type: 'iPhone' },
-  { name: 'MacBook Pro (M3)', date: '2023-10-30', type: 'MacBook' },
+  { name: 'Vision Pro', date: '2024-02-02', type: 'Vision' },
+  { name: 'MacBook Air (M3)', date: '2024-03-04', type: 'Mac' },
   { name: 'iPad Pro (M4)', date: '2024-05-07', type: 'iPad' },
   { name: 'Apple Intelligence', date: '2024-06-10', type: 'iPhone' },
   { name: 'iPhone 16', date: '2024-09-09', type: 'iPhone' },
+  { name: 'iPhone 16', date: '2024-09-09', type: 'iPhone' },
+  { name: 'iPad Mini (A17 Pro)', date: '2024-10-15', type: 'iPad' },
+  { name: 'iMac (M4)', date: '2024-10-28', type: 'Mac' },
+  { name: 'MacBook Pro (M4)', date: '2024-10-30', type: 'Mac' },
 ];
 
 const AAPLProductVsStock = () => {

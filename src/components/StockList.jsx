@@ -18,7 +18,7 @@ const apiKey = 'uDFT7igHou7SIY1ePwXjyXuHsELrLFc0';
 
 const StockList = ({ activeStock, setActiveStock }) => {
   const playClickSound = () => {
-    const audio = new Audio('public/assets/click.ogg.mp3');
+    const audio = new Audio('assets/click.ogg.mp3');
     audio.play();
   };
 

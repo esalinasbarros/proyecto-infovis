@@ -11,7 +11,6 @@ import {
   Legend,
 } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import jsonData from '../data/AAPL.json';
 
 ChartJS.register(
   CategoryScale,
@@ -45,13 +44,49 @@ const productLaunches = [
   { name: 'MacBook Pro (M4)', date: '2024-10-30', type: 'Mac' },
 ];
 
-const AAPLProductVsStock = () => {
+const AAPLProductVsStock = ( {activeStock} ) => {
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadLocalData = () => {
+    const loadLocalData = async () => {
       try {
+        let jsonData;
+          switch (activeStock) {
+              case 'AAPL':
+                  jsonData = await import('../data/AAPL.json');
+                  break;
+              case 'MSFT':
+                  jsonData = await import('../data/MSFT.json');
+                  break;
+              case 'GOOGL':
+                  jsonData = await import('../data/GOOGL.json');
+                  break;
+              case 'AMZN':
+                  jsonData = await import('../data/AMZN.json');
+                  break;
+              case 'NVDA':
+                  jsonData = await import('../data/NVDA.json');
+                  break;
+              case 'TSLA':
+                  jsonData = await import('../data/TSLA.json');
+                  break;
+              case 'META':
+                  jsonData = await import('../data/META.json');
+                  break;
+              case 'BRK.B':
+                  jsonData = await import('../data/BRKB.json');
+                  break;
+              case 'JPM':
+                  jsonData = await import('../data/JPM.json');
+                  break;
+              case 'V':
+                  jsonData = await import('../data/V.json');
+                  break;
+              default:
+                  jsonData = await import('../data/AAPL.json');
+          }
+
         const historicalData = jsonData.historical;
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -126,6 +161,11 @@ const AAPLProductVsStock = () => {
                 grid: {
                   display: false,
                 },
+                ticks: {
+                  callback: function(value) {
+                      return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                  },
+                }
               },
             },
             interaction: {
@@ -142,7 +182,7 @@ const AAPLProductVsStock = () => {
     };
 
     loadLocalData();
-  }, []);
+  }, [activeStock]);
 
   return (
     <div className="flex w-full justify-center flex-col items-center">

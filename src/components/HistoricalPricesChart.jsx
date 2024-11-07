@@ -13,7 +13,7 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const AAPLHistoricalPricesChart = ( {activeStock} ) => {
+const HistoricalPricesChart = ( {activeStock} ) => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -135,4 +135,4 @@ const AAPLHistoricalPricesChart = ( {activeStock} ) => {
     );
 };
 
-export default AAPLHistoricalPricesChart;
+export default HistoricalPricesChart;

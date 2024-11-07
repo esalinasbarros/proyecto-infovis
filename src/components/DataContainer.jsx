@@ -3,14 +3,15 @@ import HistoricalPricesChart from './HistoricalPricesChart'
 import VolumeChart from './VolumeChart'
 import StockChartWithSMA from './StockChartWithSMA'
 import StockChartWithRSI from './StockChartWithRSI'
-import ProductVsStock from './ProductVsStock';
+import ProductVsStock from './MilestonesVsStock';
 import BubbleChart from './BubbleChart'
 
 const DataContainers = ({activeStock}) => {
   return (
     <div className='flex flex-col p-12'>
       <h1 className="text-4xl font-bold text-center mb-8 text-white">
-        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Gráficos</span> de Acciones de AAPL (Apple Inc.)
+        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Gráficos</span> de 
+        Acciones de <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">{activeStock}</span> en el último año
       </h1>
       <div className="flex flex-wrap justify-center w-full">
         {/* First row */}
@@ -66,10 +67,10 @@ const DataContainers = ({activeStock}) => {
         <div className="flex w-full mb-4">
         <div className="w-1/2 p-4">
             <div className="bg-white bg-opacity-10 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-white mb-2">Lanzamiento de Productos</h2>
+              <h2 className="text-xl font-bold text-white mb-2">Hitos de la Empresa</h2>
               <ProductVsStock activeStock={activeStock}/>
               <h3 className="text-large font-semibold text-white mt-4 mb-2">¿Qué representa este gráfico?</h3>
-              <p className="text-gray-400 font-extralight text-justify">Este grafico muestra la fecha de los distintos tipos de productos Apple que han salido al mercado y el valor de la acción historica, buscando alguna relación entre estos dos.</p>
+              <p className="text-gray-400 font-extralight text-justify">Este grafico muestra la fecha de algunos hitos de la empresa y el valor de la acción historica, buscando alguna relación entre estos dos.</p>
             </div>
           </div>
           <div className="w-1/2 p-4">
@@ -79,30 +80,6 @@ const DataContainers = ({activeStock}) => {
             </div>
           </div>
         </div>
-        {/* <div className="flex w-full">
-          <div className="w-1/2 p-4">
-            <div className="bg-white bg-opacity-10 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-white mb-2">MACD (Moving Average Convergence Divergence)</h2>
-              <AAPLStockChartWithMACD />
-              <h3 className="text-large font-semibold text-white mt-4 mb-2">¿Qué representa este gráfico?</h3>
-              <p className="text-gray-400 font-extralight text-justify">Este gráfico es un indicador técnico que muestra la <span className="font-bold">relación entre dos medias móviles exponenciales (generalmente de 12 y 26 días)</span>. 
-                El MACD ayuda a identificar cambios en la tendencia y el impulso del precio. Incluye tres elementos: la línea MACD, la línea de señal (EMA de 9 días del MACD), y el histograma, que muestra la diferencia entre ambas. 
-                Cruces entre el MACD y la línea de señal, así como el comportamiento del histograma, pueden señalar oportunidades de compra o venta.</p>
-            </div>
-          </div>
-          <div className="w-1/2 p-4">
-            <div className="bg-white bg-opacity-10 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-white mb-2">Rendimiento Comparado</h2>
-              <StockPerformanceComparison />
-              <h3 className="text-large font-semibold text-white mt-4 mb-2">¿Qué representa este gráfico?</h3>
-              <p className="text-gray-400 font-extralight text-justify">Este gráfico muestra el  <span className="font-bold">rendimiento de varias acciones o índices en un periodo específico, permitiendo analizar su comportamiento relativo</span>. 
-                Al normalizar los precios de cada activo en un punto inicial (como 100%), se puede visualizar cómo han evolucionado en comparación unos con otros. 
-                Esto facilita identificar qué acciones han tenido un mejor o peor rendimiento relativo, 
-                ayudando a los inversores a evaluar qué activos han sido más rentables o han tenido mejor desempeño en un marco temporal determinado.</p>
-            </div>
-          </div>
-        </div>
-        {/* Fourth row */}
       </div>
     </div>
   )

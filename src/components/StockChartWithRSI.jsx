@@ -10,7 +10,6 @@ import {
     Tooltip, 
     Legend 
 } from 'chart.js';
-import jsonData from '../data/AAPL.json';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -49,7 +48,7 @@ const calculateRSI = (data, period = 14) => {
     return Array(period).fill(null).concat(rsi);
 };
 
-const AAPLStockChartWithRSI = ( {activeStock} ) => {
+const StockChartWithRSI = ( {activeStock} ) => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -118,12 +117,35 @@ const AAPLStockChartWithRSI = ( {activeStock} ) => {
                         {
                             label: 'RSI',
                             data: rsi,
-                            borderColor: 'rgba(255, 160, 47, 0.8)',
-                            borderWidth: 2,
+                            borderColor: 'rgba(128, 128, 128, 0.8)',
+                            borderWidth: 1,
                             fill: false,
                             pointRadius: 0,
                             tension: 0.2,
                             yAxisID: 'y2',
+                            segment: {
+                                borderColor: (ctx) => {
+                                    const value = ctx.p1.parsed.y;
+                                    const prevValue = ctx.p0 ? ctx.p0.parsed.y : null;
+                            
+                                    if (value > 70 && prevValue && prevValue > 70) {
+                                        return 'rgba(255, 99, 132, 0.8)';
+                                    } else if (value < 30 && prevValue && prevValue < 30) {
+                                        return 'rgba(54, 162, 235, 0.8)';
+                                    }
+                                    return 'rgba(128, 128, 128, 0.8)';
+                                },
+                                borderWidth: (ctx) => {
+                                    const value = ctx.p1.parsed.y;
+                                    const prevValue = ctx.p0 ? ctx.p0.parsed.y : null;
+                            
+                                    if ((value > 70 && prevValue && prevValue > 70) ||
+                                        (value < 30 && prevValue && prevValue < 30)) {
+                                        return 3;
+                                    }
+                                    return 1;
+                                },
+                            },                            
                         },
                     ],
                 };
@@ -153,6 +175,38 @@ const AAPLStockChartWithRSI = ( {activeStock} ) => {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
+                                    annotation: {
+                                        annotations: {
+                                            line1: {
+                                                type: 'line',
+                                                yMin: 30,
+                                                yMax: 30,
+                                                borderColor: 'rgba(128, 128, 128, 0.25)',
+                                                borderWidth: 2,
+                                                borderDash: [5, 5],
+                                                label: {
+                                                    content: 'RSI 30',
+                                                    enabled: true,
+                                                    position: 'end',
+                                                },
+                                                yScaleID: 'y2',
+                                            },
+                                            line2: {
+                                                type: 'line',
+                                                yMin: 70,
+                                                yMax: 70,
+                                                borderColor: 'rgba(128, 128, 128, 0.25)',
+                                                borderWidth: 2,
+                                                borderDash: [5, 5],
+                                                label: {
+                                                    content: 'RSI 70',
+                                                    enabled: true,
+                                                    position: 'end',
+                                                },
+                                                yScaleID: 'y2',
+                                            },
+                                        },
+                                    },
                                 },
                                 interaction: {
                                     mode: 'index',
@@ -186,7 +240,7 @@ const AAPLStockChartWithRSI = ( {activeStock} ) => {
                                             display: false,
                                         },
                                         ticks: {
-                                            color: 'rgba(255, 160, 47, 0.8)',
+                                            color: 'rgba(128, 128, 128, 0.8)',
                                         }
                                     },
                                 },
@@ -199,4 +253,4 @@ const AAPLStockChartWithRSI = ( {activeStock} ) => {
     );
 };
 
-export default AAPLStockChartWithRSI;
+export default StockChartWithRSI;

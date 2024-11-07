@@ -11,7 +11,6 @@ import {
     Legend,
     BarElement,
 } from 'chart.js';
-import jsonData from '../data/AAPL.json';
 
 ChartJS.register(
     CategoryScale,
@@ -43,7 +42,7 @@ const calculateMACD = (closingPrices) => {
     return { macd, signalLine, histogram };
 };
 
-const AAPLStockChartWithMACD = ( {activeStock} ) => {
+const StockChartWithMACD = ( {activeStock} ) => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -102,8 +101,8 @@ const AAPLStockChartWithMACD = ( {activeStock} ) => {
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 2,
                             fill: false,
-                            pointRadius: 0, // Sin puntos
-                            tension: 0.2, // Línea suave
+                            pointRadius: 0,
+                            tension: 0.2,
                         },
                         {
                             label: 'Línea de señal',
@@ -112,8 +111,8 @@ const AAPLStockChartWithMACD = ( {activeStock} ) => {
                             borderWidth: 2,
                             fill: false,
                             borderDash: [5, 5],
-                            pointRadius: 0, // Sin puntos
-                            tension: 0.2, // Línea suave
+                            pointRadius: 0,
+                            tension: 0.2,
                         },
                         {
                             label: 'Histograma',
@@ -161,7 +160,7 @@ const AAPLStockChartWithMACD = ( {activeStock} ) => {
                                     },
                                     x: {
                                         ticks: {
-                                            maxTicksLimit: 10, // Limitar etiquetas
+                                            maxTicksLimit: 10,
                                         },
                                     },
                                 },
@@ -174,4 +173,4 @@ const AAPLStockChartWithMACD = ( {activeStock} ) => {
     );
 };
 
-export default AAPLStockChartWithMACD;
+export default StockChartWithMACD;

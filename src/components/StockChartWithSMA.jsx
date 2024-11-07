@@ -17,7 +17,7 @@ const calculateSMA = (data, windowSize) => {
     let sma = [];
     for (let i = 0; i < data.length; i++) {
         if (i < windowSize) {
-            sma.push(null); // Llenar con valores nulos hasta alcanzar el periodo
+            sma.push(null);
         } else {
             let sum = 0;
             for (let j = 0; j < windowSize; j++) {
@@ -80,7 +80,6 @@ const StockChartWithSMA = ({ activeStock }) => {
                 const dates = sortedData.map((item) => item.date);
                 const closingPrices = sortedData.map((item) => item.close);
 
-                // Calcular la SMA de 20 días
                 const sma = calculateSMA(closingPrices, 20);
 
                 const chartData = {
@@ -149,7 +148,7 @@ const StockChartWithSMA = ({ activeStock }) => {
                                         },
                                         ticks: {
                                             callback: function(value) {
-                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Agregar signo de peso y separador de miles
+                                                return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                                             },
                                         },
                                     },

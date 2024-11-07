@@ -9,7 +9,6 @@ import {
     Tooltip, 
     Legend 
 } from 'chart.js';
-import jsonData from '../data/AAPL.json';
 
 ChartJS.register(
     CategoryScale, 
@@ -20,7 +19,7 @@ ChartJS.register(
     Legend
 );
 
-const AAPLVolumeChart = ( {activeStock} ) => {
+const VolumeChart = ( {activeStock} ) => {
     const [chartData, setChartData] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -140,4 +139,4 @@ const AAPLVolumeChart = ( {activeStock} ) => {
     );
 };
 
-export default AAPLVolumeChart;
+export default VolumeChart;

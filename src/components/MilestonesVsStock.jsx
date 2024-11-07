@@ -26,7 +26,7 @@ ChartJS.register(
 const AAPLmilestoneColors = {
   iPhone: 'rgba(255, 99, 132, 1)', // Rojo
   Mac: 'rgba(54, 162, 235, 1)', // Azul
-  Reloj: 'rgba(75, 192, 192, 1)', // Verde
+  Watch: 'rgba(75, 192, 192, 1)', // Verde
   AirPods: 'rgba(255, 206, 86, 1)', // Amarillo
   iPad: 'rgba(153, 102, 255, 1)', // Morado
   Vision: 'rgba(201, 203, 207, 1)', // Gris
@@ -69,7 +69,7 @@ const GOOGLmilestoneColors = {
 const GOOGLmilestoneDates = [
   { name: 'Modelo Gemini AI', date: '2023-12-01', type: 'AI' },
   { name: 'Conferencia Google Cloud Next', date: '2024-08-29', type: 'Nube' },
-  { name: 'Actualización de Búsqueda Generativa', date: '2024-09-16', type: 'Búsqueda' },
+  { name: 'Actualización de Búsqueda + AI', date: '2024-09-16', type: 'Búsqueda' },
 ];
 
 const AMZNmilestoneColors = {
@@ -147,7 +147,7 @@ const BRKBmilestoneColors = {
 const BRKBmilestoneDates = [
   { name: 'Récord de Reservas en Efectivo', date: '2024-10-30', type: 'Ganancias' },
   { name: 'Venta de 100M de Acciones de Apple', date: '2024-09-30', type: 'Desinversión' },
-  { name: 'Propiedad Completa de Negocio de Utilidades', date: '2024-01-16', type: 'Adquisición' },
+  { name: 'Prop. Completa Negocio Utilidades', date: '2024-01-16', type: 'Adquisición' },
   { name: 'Declive de 6% en Ganancias Operativas', date: '2024-11-02', type: 'Ganancias' },
   { name: 'Sin Recompras de Acciones', date: '2024-11-02', type: 'Recompra' },
 ];

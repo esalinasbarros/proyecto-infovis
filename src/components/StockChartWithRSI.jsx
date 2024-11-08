@@ -10,6 +10,24 @@ import {
     Tooltip, 
     Legend 
 } from 'chart.js';
+import * as Tone from 'tone';
+
+const playNote = (note) => {
+    const synth = new Tone.Synth({
+        oscillator: {
+            type: 'sine',
+        },
+        envelope: {
+            attack: 0.75,
+            decay: 0.2,
+            sustain: 0.5,
+            release: 0.75,
+        },
+        volume: -25,
+    }).toDestination();
+
+    synth.triggerAttackRelease(note, "8n");
+}; 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -170,7 +188,10 @@ const StockChartWithRSI = ( {activeStock} ) => {
                             <div className="flex justify-center space-x-2">
                                 <button
                                     className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
-                                    onClick={() => setSelectedTimeFrame('3months')}
+                                    onClick={() => {
+                                        setSelectedTimeFrame('3months');
+                                        playNote("C4");
+                                    }}
                                 >
                                     3M
                                     {selectedTimeFrame === '3months' && (
@@ -179,7 +200,10 @@ const StockChartWithRSI = ( {activeStock} ) => {
                                 </button>
                                 <button
                                     className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
-                                    onClick={() => setSelectedTimeFrame('6months')}
+                                    onClick={() => {
+                                        setSelectedTimeFrame('6months');
+                                        playNote("D4");
+                                    }}
                                 >
                                     6M
                                     {selectedTimeFrame === '6months' && (
@@ -188,7 +212,10 @@ const StockChartWithRSI = ( {activeStock} ) => {
                                 </button>
                                 <button
                                     className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
-                                    onClick={() => setSelectedTimeFrame('1year')}
+                                    onClick={() => {
+                                        setSelectedTimeFrame('1year');
+                                        playNote("E4");
+                                    }}
                                 >
                                     1Y
                                     {selectedTimeFrame === '1year' && (
@@ -197,7 +224,10 @@ const StockChartWithRSI = ( {activeStock} ) => {
                                 </button>
                                 <button
                                     className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
-                                    onClick={() => setSelectedTimeFrame('2years')}
+                                    onClick={() => {
+                                        setSelectedTimeFrame('2years');
+                                        playNote("G4");
+                                    }}
                                 >
                                     2Y
                                     {selectedTimeFrame === '2years' && (
@@ -206,7 +236,10 @@ const StockChartWithRSI = ( {activeStock} ) => {
                                 </button>
                                 <button
                                     className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
-                                    onClick={() => setSelectedTimeFrame('5years')}
+                                    onClick={() => {
+                                        setSelectedTimeFrame('5years');
+                                        playNote("C5");
+                                    }}
                                 >
                                     5Y
                                     {selectedTimeFrame === '5years' && (

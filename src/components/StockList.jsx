@@ -17,7 +17,8 @@ const apiKey = 'uDFT7igHou7SIY1ePwXjyXuHsELrLFc0';
 
 const StockList = ({ activeStock, setActiveStock }) => {
   const playClickSound = () => {
-    const audio = new Audio('assets/click.ogg.mp3');
+    const audio = new Audio('assets/success_sound.wav');
+    audio.volume = 0.2;
     audio.play();
   };
 
@@ -39,7 +40,7 @@ const StockList = ({ activeStock, setActiveStock }) => {
               className={`w-36 h-24 ml-1 mr-1 flex flex-col justify-center items-center rounded-lg shadow-md cursor-pointer transition-colors duration-300 ${
                 activeStock === stock.symbol
                   ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700'
-                  : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+                  : 'border border-gray-700 hover:bg-opacity-20'
               }`}
               onClick={() => handleClick(stock.symbol)}
             >

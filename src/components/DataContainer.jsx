@@ -6,18 +6,19 @@ import StockChartWithRSI from './StockChartWithRSI'
 import ProductVsStock from './MilestonesVsStock';
 import BubbleChart from './BubbleChart'
 
-
 const ExplanationButton = ({ isOpen, onClick, children }) => {
-  const zoomIn = useRef(new Audio('assets/zoom-in-35865.mp3'));
-  const zoomOut = useRef(new Audio('assets/zoom-out-46654.mp3'));
+  const zoomIn = useRef(new Audio('assets/click.mp3'));
+  const zoomOut = useRef(new Audio('assets/click.mp3'));
 
   const handleClick = () => {
     try {
       if (!isOpen) {
-        const audio = new Audio('assets/zoom-in-35865.mp3');
+        const audio = new Audio('assets/click.mp3');
+        audio.volume = 0.2;
         audio.play();
       } else {
-        const audio = new Audio('assets/zoom-out-46654.mp3');
+        const audio = new Audio('assets/click.mp3');
+        audio.volume = 0.2;
         audio.play();
       }
     } catch (error) {
@@ -79,7 +80,7 @@ const DataContainers = ({activeStock}) => {
         {/* First row */}
         <div className="flex w-full mb-4">
           <div className="w-1/2 p-4">
-            <div className=" rounded-lg p-6">
+            <div className=" rounded-lg p-6 border border-gray-700">
               <h2 className="text-xl font-bold text-white mb-2">Precios Históricos</h2>
               <HistoricalPricesChart activeStock={activeStock}/>
               
@@ -101,7 +102,7 @@ const DataContainers = ({activeStock}) => {
             </div>
           </div>
           <div className="w-1/2 p-4">
-            <div className="rounded-lg p-6">
+            <div className="rounded-lg p-6 border border-gray-700">
               <h2 className="text-xl font-bold text-white mb-2">Volumen de Transacciones</h2>
               <VolumeChart activeStock={activeStock}/>
               
@@ -125,7 +126,7 @@ const DataContainers = ({activeStock}) => {
         {/* Second row */}
         <div className="flex w-full mb-4">
           <div className="w-1/2 p-4">
-            <div className="rounded-lg p-6">
+            <div className="rounded-lg p-6 border border-gray-700">
               <h2 className="text-xl font-bold text-white mb-2">Media Móvil</h2>
               <StockChartWithSMA activeStock={activeStock}/>
               
@@ -145,7 +146,7 @@ const DataContainers = ({activeStock}) => {
             </div>
           </div>
           <div className="w-1/2 p-4">
-            <div className="rounded-lg p-6">
+            <div className="rounded-lg p-6 border border-gray-700">
               <h2 className="text-xl font-bold text-white mb-2">RSI (Relative Strength Index)</h2>
               <StockChartWithRSI activeStock={activeStock}/>
               
@@ -168,7 +169,7 @@ const DataContainers = ({activeStock}) => {
         {/* Third row */}
         <div className="flex w-full mb-4">
           <div className="w-1/2 p-4">
-            <div className="rounded-lg p-6">
+            <div className="rounded-lg p-6 border border-gray-700">
               <h2 className="text-xl font-bold text-white mb-2">Hitos de la Empresa</h2>
               <ProductVsStock activeStock={activeStock}/>
               
@@ -186,7 +187,7 @@ const DataContainers = ({activeStock}) => {
             </div>
           </div>
           <div className="w-1/2 p-4">
-            <div className="rounded-lg p-6">
+            <div className="rounded-lg p-6 border border-gray-700">
               <h2 className="text-xl font-bold text-white mb-2">Comparación de Mercado</h2>
               <BubbleChart />
             </div>

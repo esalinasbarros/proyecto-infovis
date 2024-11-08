@@ -1,16 +1,16 @@
 import React from 'react';
 
 const popularStocks = [
-  { symbol: 'AAPL', name: 'Apple Inc.', image: 'public/assets/apple_logo_white.png' },
-  { symbol: 'MSFT', name: 'Microsoft Corporation', image: 'public/assets/microsoft_logo_white.webp' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc. (Google)', image: 'public/assets/google_logo_white.png' },
-  { symbol: 'AMZN', name: 'Amazon.com Inc.', image: 'public/assets/amazon_logo_white.png' },
-  { symbol: 'NVDA', name: 'NVIDIA Corporation', image: 'public/assets/nvidia_logo_white.png' },
-  { symbol: 'TSLA', name: 'Tesla Inc.', image: 'public/assets/tesla_logo_white.png' },
-  { symbol: 'META', name: 'Meta Platforms Inc. (Facebook)', image: 'public/assets/meta_logo_white.png' },
-  { symbol: 'BRK.B', name: 'Berkshire Hathaway Inc.', image: 'public/assets/brk_logo_white.png' },
-  { symbol: 'JPM', name: 'JPMorgan Chase & Co.', image: 'public/assets/chase_logo_white.png' },
-  { symbol: 'V', name: 'Visa Inc.', image: 'public/assets/visa_logo_white.png' },
+  { symbol: 'AAPL', name: 'Apple Inc.', image: 'assets/apple_logo_white.png' },
+  { symbol: 'MSFT', name: 'Microsoft Corporation', image: 'assets/microsoft_logo_white.webp' },
+  { symbol: 'GOOGL', name: 'Alphabet Inc. (Google)', image: 'assets/google_logo_white.png' },
+  { symbol: 'AMZN', name: 'Amazon.com Inc.', image: 'assets/amazon_logo_white.png' },
+  { symbol: 'NVDA', name: 'NVIDIA Corporation', image: 'assets/nvidia_logo_white.png' },
+  { symbol: 'TSLA', name: 'Tesla Inc.', image: 'assets/tesla_logo_white.png' },
+  { symbol: 'META', name: 'Meta Platforms Inc. (Facebook)', image: 'assets/meta_logo_white.png' },
+  { symbol: 'BRK.B', name: 'Berkshire Hathaway Inc.', image: 'assets/brk_logo_white.png' },
+  { symbol: 'JPM', name: 'JPMorgan Chase & Co.', image: 'assets/chase_logo_white.png' },
+  { symbol: 'V', name: 'Visa Inc.', image: 'assets/visa_logo_white.png' },
 ];
 
 const apiKey = 'uDFT7igHou7SIY1ePwXjyXuHsELrLFc0';

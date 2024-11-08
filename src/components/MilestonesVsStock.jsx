@@ -188,6 +188,7 @@ const MilestonesVsStock = ( {activeStock} ) => {
   const [loading, setLoading] = useState(true);
   const [milestoneColors, setMilestoneColors] = useState({});
   const [milestoneDates, setMilestoneDates] = useState([]);
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState('5years');
 
   useEffect(() => {
     const loadLocalData = async () => {
@@ -197,57 +198,57 @@ const MilestonesVsStock = ( {activeStock} ) => {
         let milestoneDates = [];
           switch (activeStock) {
               case 'AAPL':
-                  jsonData = await import('../data/AAPL.json');
+                  jsonData = await import(`../data/AAPL/AAPL${selectedTimeFrame}.json`);
                   milestoneColors = AAPLmilestoneColors;
                   milestoneDates = AAPLmilestoneDates;
                   break;
               case 'MSFT':
-                  jsonData = await import('../data/MSFT.json');
+                  jsonData = await import(`../data/MSFT/MSFT${selectedTimeFrame}.json`);
                   milestoneColors = MSFTmilestoneColors;
                   milestoneDates = MSFTmilestoneDates;
                   break;
               case 'GOOGL':
-                  jsonData = await import('../data/GOOGL.json');
+                  jsonData = await import(`../data/GOOGL/GOOGL${selectedTimeFrame}.json`);
                   milestoneColors = GOOGLmilestoneColors;
                   milestoneDates = GOOGLmilestoneDates;
                   break;
               case 'AMZN':
-                  jsonData = await import('../data/AMZN.json');
+                  jsonData = await import(`../data/AMZN/AMZN${selectedTimeFrame}.json`);
                   milestoneColors = AMZNmilestoneColors;
                   milestoneDates = AMZNmilestoneDates;
                   break;
               case 'NVDA':
-                  jsonData = await import('../data/NVDA.json');
+                  jsonData = await import(`../data/NVDA/NVDA${selectedTimeFrame}.json`);
                   milestoneColors = NVDAmilestoneColors;
                   milestoneDates = NVDAmilestoneDates;
                   break;
               case 'TSLA':
-                  jsonData = await import('../data/TSLA.json');
+                  jsonData = await import(`../data/TSLA/TSLA${selectedTimeFrame}.json`);
                   milestoneColors = TSLAmilestoneColors;
                   milestoneDates = TSLAmilestoneDates;
                   break;
               case 'META':
-                  jsonData = await import('../data/META.json');
+                  jsonData = await import(`../data/META/META${selectedTimeFrame}.json`);
                   milestoneColors = METAmilestoneColors;
                   milestoneDates = METAmilestoneDates;
                   break;
               case 'BRK.B':
-                  jsonData = await import('../data/BRKB.json');
+                  jsonData = await import(`../data/BRKB/BRKB${selectedTimeFrame}.json`);
                   milestoneColors = BRKBmilestoneColors;
                   milestoneDates = BRKBmilestoneDates;
                   break;
               case 'JPM':
-                  jsonData = await import('../data/JPM.json');
+                  jsonData = await import(`../data/JPM/JPM${selectedTimeFrame}.json`);
                   milestoneColors = JPMmilestoneColors;
                   milestoneDates = JPMmilestoneDates;
                   break;
               case 'V':
-                  jsonData = await import('../data/V.json');
+                  jsonData = await import(`../data/V/V${selectedTimeFrame}.json`);
                   milestoneColors = VmilestoneColors;
                   milestoneDates = VmilestoneDates;
                   break;
               default:
-                  jsonData = await import('../data/AAPL.json');
+                  jsonData = await import(`../data/AAPL/AAPL${selectedTimeFrame}.json`);
                   milestoneColors = AAPLmilestoneColors;
                   milestoneDates = AAPLmilestoneDates;
           }

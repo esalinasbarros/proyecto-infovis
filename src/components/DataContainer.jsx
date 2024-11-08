@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import HistoricalPricesChart from './HistoricalPricesChart'
 import VolumeChart from './VolumeChart'
 import StockChartWithSMA from './StockChartWithSMA'
@@ -6,29 +6,50 @@ import StockChartWithRSI from './StockChartWithRSI'
 import ProductVsStock from './MilestonesVsStock';
 import BubbleChart from './BubbleChart'
 
-const ExplanationButton = ({ isOpen, onClick, children }) => (
-  <div className="relative inline-block">
-    <button 
-      onClick={onClick}
-      className="mt-4 px-3 py-1 rounded text-sm bg-white bg-opacity-10 text-white hover:bg-opacity-20 transition-all flex items-center gap-2"
-    >
-      <span>{isOpen ? 'Ocultar' : 'Ver'} Explicación</span>
-      <svg 
-        className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
-        fill="none" 
-        stroke="currentColor" 
-        viewBox="0 0 24 24"
+
+const ExplanationButton = ({ isOpen, onClick, children }) => {
+  const zoomIn = useRef(new Audio('assets/zoom-in-35865.mp3'));
+  const zoomOut = useRef(new Audio('assets/zoom-out-46654.mp3'));
+
+  const handleClick = () => {
+    try {
+      if (!isOpen) {
+        const audio = new Audio('assets/zoom-in-35865.mp3');
+        audio.play();
+      } else {
+        const audio = new Audio('assets/zoom-out-46654.mp3');
+        audio.play();
+      }
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
+    onClick();
+  };
+
+  return (
+    <div className="relative inline-block mt-8">
+      <button 
+        onClick={handleClick}
+        className="px-3 py-1 rounded text-sm bg-white bg-opacity-10 text-white hover:bg-opacity-20 transition-all flex items-center gap-2"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-  </div>
-);
+        <span>{isOpen ? 'Ocultar' : 'Ver'} Explicación</span>
+        <svg 
+          className={`w-4 h-4 transition-transform duration-700 ${isOpen ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+  );
+};
 
 const ExplanationContent = ({ isOpen, title, children }) => (
   <div
     className={`
-      overflow-hidden transition-all duration-300 ease-in-out
+      overflow-hidden transition-all duration-700 ease-in-out
       ${isOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}
     `}
   >
@@ -51,8 +72,8 @@ const DataContainers = ({activeStock}) => {
   return (
     <div className='flex flex-col p-12'>
       <h1 className="text-4xl font-bold text-center mb-8 text-white">
-        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Gráficos</span> de 
-        Acciones de <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">{activeStock}</span> en el último año
+        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Información</span> de 
+        Acciones de <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">{activeStock}</span>
       </h1>
       <div className="flex flex-wrap justify-center w-full">
         {/* First row */}

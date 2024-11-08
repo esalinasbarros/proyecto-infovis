@@ -357,7 +357,7 @@ const MilestonesVsStock = ( {activeStock} ) => {
   console.log("Milestone Colors:", milestoneColors);
   return (
     <div className="flex w-full justify-center flex-col items-center">
-      <div className="bg-white bg-opacity-10 rounded-lg p-6 w-full max-w-4xl mb-8">
+      <div className="rounded-lg p-6 w-full max-w-4xl mb-8">
         {loading ? (
           <p className="text-gray-300">Cargando gráfico...</p>
         ) : (
@@ -367,7 +367,7 @@ const MilestonesVsStock = ( {activeStock} ) => {
         )}
       </div>
 
-      <div className="bg-white bg-opacity-10 rounded-lg p-4 w-full max-w-4xl">
+      <div className="rounded-lg p-4 w-full max-w-4xl">
         <h3 className="text-lg font-semibold text-gray-300 mb-4">Leyenda de Hitos</h3>
         <ul className="grid grid-cols-2 gap-4">
           {Object.entries(milestoneColors).map(([type, color]) => (

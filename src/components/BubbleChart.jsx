@@ -76,7 +76,7 @@ const D3BubbleChart = () => {
         .select(svgRef.current)
         .attr('width', width)
         .attr('height', height)
-        .style('background', 'rgba(255, 255, 255, 0.1)');
+        .style('background', 'transparent');
 
       data.forEach((d) => {
         d.x = width / 2;

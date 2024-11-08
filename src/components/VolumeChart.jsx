@@ -96,62 +96,59 @@ const VolumeChart = ( {activeStock} ) => {
 
     return (
         <div className="flex w-full justify-center">
-            <div className="bg-white bg-opacity-10 rounded-lg p-6 w-full max-w-4xl">
+            <div className="rounded-lg p-6 w-full max-w-4xl">
                 {loading ? (
                     <p className="text-gray-300">Cargando gráfico...</p>
                 ) : (
                     <div className="h-64">
-                        <div className="flex justify-center space-x-2 mb-4">
-                            <button
-                                className={`px-3 py-1 rounded text-sm ${
-                                    selectedTimeFrame === '3months'
-                                        ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white'
-                                        : 'bg-white bg-opacity-10 text-white'
-                                }`}
-                                onClick={() => setSelectedTimeFrame('3months')}
-                            >
-                                3M
-                            </button>
-                            <button
-                                className={`px-3 py-1 rounded text-sm ${
-                                    selectedTimeFrame === '6months'
-                                        ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white'
-                                        : 'bg-white bg-opacity-10 text-white'
-                                }`}
-                                onClick={() => setSelectedTimeFrame('6months')}
-                            >
-                                6M
-                            </button>
-                            <button
-                                className={`px-3 py-1 rounded text-sm ${
-                                    selectedTimeFrame === '1year'
-                                        ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white'
-                                        : 'bg-white bg-opacity-10 text-white'
-                                }`}
-                                onClick={() => setSelectedTimeFrame('1year')}
-                            >
-                                1Y
-                            </button>
-                            <button
-                                className={`px-3 py-1 rounded text-sm ${
-                                    selectedTimeFrame === '2years'
-                                        ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white'
-                                        : 'bg-white bg-opacity-10 text-white'
-                                }`}
-                                onClick={() => setSelectedTimeFrame('2years')}
-                            >
-                                2Y
-                            </button>
-                            <button
-                                className={`px-3 py-1 rounded text-sm ${
-                                    selectedTimeFrame === '5years'
-                                        ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white'
-                                        : 'bg-white bg-opacity-10 text-white'
-                                }`}
-                                onClick={() => setSelectedTimeFrame('5years')}
-                            >
-                                5Y
-                            </button>
+                        <div className="flex flex-col items-center mb-6">
+                            <div className="flex justify-center space-x-2">
+                                <button
+                                    className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
+                                    onClick={() => setSelectedTimeFrame('3months')}
+                                >
+                                    3M
+                                    {selectedTimeFrame === '3months' && (
+                                        <div className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700"></div>
+                                    )}
+                                </button>
+                                <button
+                                    className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
+                                    onClick={() => setSelectedTimeFrame('6months')}
+                                >
+                                    6M
+                                    {selectedTimeFrame === '6months' && (
+                                        <div className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700"></div>
+                                    )}
+                                </button>
+                                <button
+                                    className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
+                                    onClick={() => setSelectedTimeFrame('1year')}
+                                >
+                                    1Y
+                                    {selectedTimeFrame === '1year' && (
+                                        <div className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700"></div>
+                                    )}
+                                </button>
+                                <button
+                                    className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
+                                    onClick={() => setSelectedTimeFrame('2years')}
+                                >
+                                    2Y
+                                    {selectedTimeFrame === '2years' && (
+                                        <div className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700"></div>
+                                    )}
+                                </button>
+                                <button
+                                    className={`relative px-3 py-1 rounded text-sm text-white hover:text-gray-300 transition-colors`}
+                                    onClick={() => setSelectedTimeFrame('5years')}
+                                >
+                                    5Y
+                                    {selectedTimeFrame === '5years' && (
+                                        <div className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700"></div>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                         <Bar
                             data={chartData}

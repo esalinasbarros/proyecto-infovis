@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const popularStocks = [
   { symbol: 'AAPL', name: 'Apple Inc.', image: 'assets/apple_logo_white.png' },
@@ -13,9 +13,7 @@ const popularStocks = [
   { symbol: 'V', name: 'Visa Inc.', image: 'assets/visa_logo_white.png' },
 ];
 
-const StockList = () => {
-  const [activeStock, setActiveStock] = useState('');
-
+const StockList = ({ activeStock, setActiveStock }) => {
   const playClickSound = () => {
     const audio = new Audio('assets/success_sound.wav');
     audio.volume = 0.2;
@@ -32,12 +30,12 @@ const StockList = () => {
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 text-white">
         <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Acciones</span> Disponibles
       </h2>
-      <div className="mt-8 sm:mt-12">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="flex justify-center mt-4 sm:mt-8 md:mt-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
           {popularStocks.map(stock => (
-            <div
+            <button
               key={stock.symbol}
-              className={`aspect-square flex flex-col justify-center items-center rounded-lg shadow-md cursor-pointer transition-colors duration-300 ${
+              className={`w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 flex flex-col justify-center items-center rounded-lg shadow-md cursor-pointer transition-colors duration-300 ${
                 activeStock === stock.symbol
                   ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700'
                   : 'border border-gray-700 hover:bg-opacity-20'
@@ -52,12 +50,12 @@ const StockList = () => {
                 }`}
               />
               <p className="mt-2 text-xs sm:text-sm text-center text-white">{stock.symbol}</p>
-            </div>
+            </button>
           ))}
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
 export default StockList;

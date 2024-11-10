@@ -1,12 +1,29 @@
-// D3BubbleChart.js
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import * as d3 from 'd3';
 
 const D3BubbleChart = () => {
   const svgRef = useRef();
+  const containerRef = useRef();
+  const [dimensions, setDimensions] = useState({ width: 780, height: 615 });
   const apiKey = 'uDFT7igHou7SIY1ePwXjyXuHsELrLFc0';
   const stockSymbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM', 'V'];
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { width } = containerRef.current.getBoundingClientRect();
+        setDimensions({ width: width, height: width * 0.8 });
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchStockData = async () => {
@@ -47,28 +64,26 @@ const D3BubbleChart = () => {
     };
 
     const drawChart = (data) => {
-      const width = 780;
-      const height = 615;
+      const { width, height } = dimensions;
 
       const sizeScale = d3
         .scaleSqrt()
         .domain([0, d3.max(data, (d) => d.marketCap)])
-        .range([20, 100]);
+        .range([width * 0.02, width * 0.1]);
 
       const colorScale = d3.scaleOrdinal()
         .domain(stockSymbols)
         .range([
-            '#FF6F61', // Darker Red
-            '#FF8C42', // Darker Orange
-            '#FFD700', // Darker Yellow
-            '#4CAF50', // Darker Green
-            '#2196F3', // Darker Blue
-            '#9C27B0', // Darker Purple
-            '#FF69B4', // Darker Pink
-            '#4682B4', // Darker Sky Blue
-            '#FF7F50'  // Darker Peach
+          '#FF6F61', // Darker Red
+          '#FF8C42', // Darker Orange
+          '#FFD700', // Darker Yellow
+          '#4CAF50', // Darker Green
+          '#2196F3', // Darker Blue
+          '#9C27B0', // Darker Purple
+          '#FF69B4', // Darker Pink
+          '#4682B4', // Darker Sky Blue
+          '#FF7F50'  // Darker Peach
         ]);
-      
 
       d3.select(svgRef.current).selectAll('*').remove();
 
@@ -119,7 +134,7 @@ const D3BubbleChart = () => {
       const labels = nodes
         .append('text')
         .attr('text-anchor', 'middle')
-        .attr('font-size', (d) => Math.min(sizeScale(d.marketCap) / 4, 16))
+        .attr('font-size', (d) => Math.min(sizeScale(d.marketCap) / 4, width * 0.02))
         .attr('fill', '#000');
 
       labels
@@ -145,9 +160,13 @@ const D3BubbleChart = () => {
     };
 
     fetchStockData();
-  }, [apiKey]);
+  }, [apiKey, dimensions]);
 
-  return <svg ref={svgRef} className="rounded-lg"></svg>;
+  return (
+    <div ref={containerRef} className="w-full h-full">
+      <svg ref={svgRef} className="rounded-lg w-full h-full"></svg>
+    </div>
+  );
 };
 
 export default D3BubbleChart;

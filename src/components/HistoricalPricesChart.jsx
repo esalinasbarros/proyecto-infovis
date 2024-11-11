@@ -63,7 +63,7 @@ const HistoricalPricesChart = ( {activeStock} ) => {
                         jsonData = await import(`../data/META/META${selectedTimeFrame}.json`);
                         break;
                     case 'BRK.B':
-                        jsonData = await import(`../data/BRK.B/BRK.B${selectedTimeFrame}.json`);
+                        jsonData = await import(`../data/BRKB/BRKB${selectedTimeFrame}.json`);
                         break;
                     case 'JPM':
                         jsonData = await import(`../data/JPM/JPM${selectedTimeFrame}.json`);

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import io from 'socket.io-client'; // Install with `npm install socket.io-client`
 
 const popularStocks = [
   { symbol: 'AAPL', name: 'Apple Inc.', image: 'assets/apple_logo_white.png' },
@@ -24,6 +25,46 @@ const StockList = ({ activeStock, setActiveStock }) => {
     playClickSound();
     setActiveStock(symbol);
   };
+
+  useEffect(() => {
+    // Request microphone permissions
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(() => {
+        console.log('Microphone access granted');
+
+        // Initialize speech recognition
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        recognition.onresult = (event) => {
+          const command = event.results[0][0].transcript.toLowerCase();
+          console.log('Recognized command:', command);
+
+          const stock = popularStocks.find(stock =>
+            stock.symbol.toLowerCase() === command.toLowerCase() ||
+            stock.name.toLowerCase().includes(command.toLowerCase())
+          );
+
+          if (stock) {
+            playClickSound();
+            setActiveStock(stock.symbol);
+          }
+        };
+
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.start();
+
+        return () => recognition.stop();
+      })
+      .catch((err) => {
+        console.error('Microphone access denied:', err);
+      });
+  }, [setActiveStock]);
 
   return (
     <div className="w-full overflow-x-auto p-4 sm:p-8 md:p-12">

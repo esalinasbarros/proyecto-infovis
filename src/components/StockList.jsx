@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import io from 'socket.io-client'; // Install with `npm install socket.io-client`
+import React, { useState } from 'react';
+import QRScanner from './QRScanner'; // Import the QRScanner component
 
 const popularStocks = [
   { symbol: 'AAPL', name: 'Apple Inc.', image: 'assets/apple_logo_white.png' },
@@ -18,7 +18,7 @@ const StockList = ({ activeStock, setActiveStock }) => {
   const playClickSound = () => {
     const audio = new Audio('assets/success_sound.wav');
     audio.volume = 0.2;
-    audio.play().catch(error => console.error('Error playing audio:', error));
+    audio.play().catch((error) => console.error('Error playing audio:', error));
   };
 
   const handleClick = (symbol) => {
@@ -26,54 +26,31 @@ const StockList = ({ activeStock, setActiveStock }) => {
     setActiveStock(symbol);
   };
 
-  useEffect(() => {
-    // Request microphone permissions
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then(() => {
-        console.log('Microphone access granted');
+  const handleQRCodeScan = (data) => {
+    if (!isScanning) return; // Ignore scans during the buffer period
 
-        // Initialize speech recognition
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-
-        recognition.onresult = (event) => {
-          const command = event.results[0][0].transcript.toLowerCase();
-          console.log('Recognized command:', command);
-
-          const stock = popularStocks.find(stock =>
-            stock.symbol.toLowerCase() === command.toLowerCase() ||
-            stock.name.toLowerCase().includes(command.toLowerCase())
-          );
-
-          if (stock) {
-            playClickSound();
-            setActiveStock(stock.symbol);
-          }
-        };
-
-        recognition.onerror = (event) => {
-          console.error('Speech recognition error:', event.error);
-        };
-
-        recognition.start();
-
-        return () => recognition.stop();
-      })
-      .catch((err) => {
-        console.error('Microphone access denied:', err);
-      });
-  }, [setActiveStock]);
+    const matchedStock = popularStocks.find((stock) => stock.symbol === data);
+    if (matchedStock) {
+      setActiveStock(matchedStock.symbol);
+      playClickSound();
+      setIsScanning(false); // Disable scanning
+      setTimeout(() => setIsScanning(true), 2000); // Re-enable scanning after 2 seconds
+    } else {
+      console.error('Scanned QR Code does not match any stock.');
+    }
+  };
 
   return (
     <div className="w-full overflow-x-auto p-4 sm:p-8 md:p-12">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 text-white">
-        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">Acciones</span> Disponibles
+        <span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">
+          Acciones
+        </span>{' '}
+        Disponibles
       </h2>
       <div className="flex justify-center mt-4 sm:mt-8 md:mt-12">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
-          {popularStocks.map(stock => (
+          {popularStocks.map((stock) => (
             <button
               key={stock.symbol}
               className={`w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 flex flex-col justify-center items-center rounded-lg shadow-md cursor-pointer transition-colors duration-300 ${
@@ -93,6 +70,16 @@ const StockList = ({ activeStock, setActiveStock }) => {
               <p className="mt-2 text-xs sm:text-sm text-center text-white">{stock.symbol}</p>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* QR Scanner Section */}
+      <div className="mt-12">
+        <h3 className="text-xl sm:text-2xl font-bold text-center text-white"><span className="bg-clip-text text-transparent bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700">
+          Escanear
+        </span> código QR</h3>
+        <div className="flex justify-center mt-4">
+          <QRScanner onScan={handleQRCodeScan} />
         </div>
       </div>
     </div>

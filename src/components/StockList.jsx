@@ -27,14 +27,10 @@ const StockList = ({ activeStock, setActiveStock }) => {
   };
 
   const handleQRCodeScan = (data) => {
-    if (!isScanning) return; // Ignore scans during the buffer period
-
     const matchedStock = popularStocks.find((stock) => stock.symbol === data);
     if (matchedStock) {
       setActiveStock(matchedStock.symbol);
       playClickSound();
-      setIsScanning(false); // Disable scanning
-      setTimeout(() => setIsScanning(true), 2000); // Re-enable scanning after 2 seconds
     } else {
       console.error('Scanned QR Code does not match any stock.');
     }
